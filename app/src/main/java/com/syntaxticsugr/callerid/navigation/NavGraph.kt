@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.syntaxticsugr.callerid.ui.screens.LoginScreen
 import com.syntaxticsugr.callerid.ui.screens.WelcomeScreen
 
 @ExperimentalAnimationApi
@@ -20,6 +21,10 @@ fun SetupNavGraph(
 
         composable(route = Screens.Welcome.route) {
             WelcomeScreen(navController = navController)
+        }
+
+        composable(route = Screens.Login.route) {
+            LoginScreen(navController = navController)
         }
 
     }
