@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.syntaxticsugr.callerid.ui.screens.HomeScreen
 import com.syntaxticsugr.callerid.ui.screens.LoginScreen
 import com.syntaxticsugr.callerid.ui.screens.WelcomeScreen
 
@@ -14,6 +15,7 @@ fun SetupNavGraph(
     navController: NavHostController,
     startDestination: String
 ) {
+    
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -23,9 +25,14 @@ fun SetupNavGraph(
             WelcomeScreen(navController = navController)
         }
 
-        composable(route = Screens.Login.route) {
+        composable(route = Screens.LogIn.route) {
             LoginScreen(navController = navController)
         }
 
+        composable(route = Screens.Home.route) {
+            HomeScreen(navController = navController)
+        }
+
     }
+    
 }
