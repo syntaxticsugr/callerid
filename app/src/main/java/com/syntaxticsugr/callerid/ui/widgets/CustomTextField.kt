@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -12,18 +13,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.KeyboardType
 import com.slaviboy.composeunits.dw
 
 @Composable
-fun LoginTextField(
+fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
     prefix: String? = null,
     leadingIcon: ImageVector? = null,
     supportingText: String? = null,
-    isError: Boolean = false
+    isError: Boolean = false,
+    keyboardType: KeyboardType? = null
 ) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,18 +43,19 @@ fun LoginTextField(
                     .size(0.08.dw),
             )
         } else {
-            Spacer(modifier = Modifier.width((0.05.dw*2) + 0.08.dw))
+            Spacer(modifier = Modifier.width((0.05.dw * 2) + 0.08.dw))
         }
 
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             value = value,
             onValueChange = onValueChange,
             label = { Text(label) },
             prefix = if (prefix != null) {
                 {
                     Text(
-                        prefix,
+                        text = prefix
                     )
                 }
             } else {
@@ -59,7 +64,7 @@ fun LoginTextField(
             supportingText = if (supportingText != null) {
                 {
                     Text(
-                        supportingText,
+                        text = supportingText,
                         fontStyle = FontStyle.Italic,
                     )
                 }
@@ -68,6 +73,11 @@ fun LoginTextField(
             },
             singleLine = true,
             isError = isError,
+            keyboardOptions = if (keyboardType != null) {
+                KeyboardOptions(keyboardType = keyboardType)
+            } else {
+                KeyboardOptions()
+            }
         )
     }
 

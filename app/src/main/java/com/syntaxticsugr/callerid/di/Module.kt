@@ -4,6 +4,7 @@ import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.viewmodel.LoginViewModel
 import com.syntaxticsugr.callerid.viewmodel.PermissionsViewModel
 import com.syntaxticsugr.callerid.viewmodel.SplashViewModel
+import com.syntaxticsugr.callerid.viewmodel.VerifyViewModel
 import com.syntaxticsugr.callerid.viewmodel.WelcomeViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -29,7 +30,11 @@ val calleridModule = module {
     }
 
     viewModel<LoginViewModel> {
-        LoginViewModel()
+        LoginViewModel(get())
+    }
+
+    viewModel<VerifyViewModel> {
+        VerifyViewModel(get())
     }
 
 }

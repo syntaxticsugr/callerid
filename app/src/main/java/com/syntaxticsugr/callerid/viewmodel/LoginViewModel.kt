@@ -4,8 +4,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.syntaxticsugr.callerid.datastore.DataStorePref
+import com.syntaxticsugr.callerid.navigation.Screens
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val pref: DataStorePref
+) : ViewModel() {
 
     var firstName by mutableStateOf("")
     var lastName by mutableStateOf("")
@@ -17,7 +25,28 @@ class LoginViewModel : ViewModel() {
     var phoneNumberError by mutableStateOf(false)
     var emailError by mutableStateOf(false)
 
-    fun validateFields(): Boolean {
+    private fun nextScreen(navController: NavController) {
+        navController.navigate(Screens.Verify.route) {
+            popUpTo(Screens.LogIn.route) {
+                inclusive = false
+            }
+        }
+    }
+
+    private fun saveUserCreds() {
+        viewModelScope.launch(Dispatchers.IO) {
+            pref.writeString(key = "firstName", value = firstName)
+            pref.writeString(key = "lastName", value = lastName)
+            pref.writeString(key = "phoneNumber", value = phoneNumber)
+            pref.writeString(key = "email", value = email)
+        }
+    }
+
+    private fun checkName(name: String): Boolean {
+        return (name.isBlank() || !name.matches(Regex("^[a-zA-Z]+$")))
+    }
+
+    private fun validateFields(): Boolean {
         firstNameError = false
         lastNameError = false
         phoneNumberError = false
@@ -25,11 +54,11 @@ class LoginViewModel : ViewModel() {
 
         var isValid = true
 
-        if (firstName.isBlank()) {
+        if (checkName(firstName)) {
             firstNameError = true
             isValid = false
         }
-        if (lastName.isBlank()) {
+        if (checkName(lastName)) {
             lastNameError = true
             isValid = false
         }
@@ -39,6 +68,14 @@ class LoginViewModel : ViewModel() {
         }
 
         return isValid
+    }
+
+    fun login(navController: NavController) {
+        if (validateFields()) {
+            saveUserCreds()
+
+            nextScreen(navController)
+        }
     }
 
 }

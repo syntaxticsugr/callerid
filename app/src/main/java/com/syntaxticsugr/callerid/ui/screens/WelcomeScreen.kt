@@ -5,8 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,10 +39,7 @@ fun WelcomeScreen(
                 textAlign = TextAlign.Start,
             )
 
-            FilledIconButton(
-                modifier = Modifier
-                    .width(0.20.dw)
-                    .padding(top = 0.20.dw),
+            Button(
                 onClick = {
                     welcomeViewModel.nextScreen(navController)
                 }

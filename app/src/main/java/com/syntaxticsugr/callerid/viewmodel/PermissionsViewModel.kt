@@ -28,13 +28,13 @@ class PermissionsViewModel(
 
         if (authKey.exists()) {
             navController.navigate(Screens.Home.route) {
-                popUpTo(Screens.Home.route) {
+                popUpTo(Screens.Permissions.route) {
                     inclusive = true
                 }
             }
         } else {
             navController.navigate(Screens.LogIn.route) {
-                popUpTo(Screens.LogIn.route) {
+                popUpTo(Screens.Permissions.route) {
                     inclusive = true
                 }
             }

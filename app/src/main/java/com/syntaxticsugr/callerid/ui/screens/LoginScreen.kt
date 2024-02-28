@@ -1,26 +1,26 @@
 package com.syntaxticsugr.callerid.ui.screens
 
-import LoginTextField
+import CustomTextField
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dh
 import com.slaviboy.composeunits.dw
@@ -31,7 +31,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LogInScreen(
     navController: NavHostController,
-    viewModel: LoginViewModel = koinViewModel()
+    loginViewModel: LoginViewModel = koinViewModel()
 ) {
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
@@ -52,47 +52,46 @@ fun LogInScreen(
         ) {
             Spacer(modifier = Modifier.height(0.25.dh))
 
-            LoginTextField(
-                value = viewModel.firstName,
-                onValueChange = { viewModel.firstName = it },
+            CustomTextField(
+                value = loginViewModel.firstName,
+                onValueChange = { loginViewModel.firstName = it },
                 label = "First Name",
                 leadingIcon = Icons.Filled.Person,
-                isError = viewModel.firstNameError,
+                isError = loginViewModel.firstNameError
             )
-            LoginTextField(
-                value = viewModel.lastName,
-                onValueChange = { viewModel.lastName = it },
+            CustomTextField(
+                value = loginViewModel.lastName,
+                onValueChange = { loginViewModel.lastName = it },
                 label = "Last Name",
-                isError = viewModel.lastNameError,
+                isError = loginViewModel.lastNameError
             )
-            LoginTextField(
-                value = viewModel.phoneNumber,
-                onValueChange = { viewModel.phoneNumber = it },
+            CustomTextField(
+                value = loginViewModel.phoneNumber,
+                onValueChange = { loginViewModel.phoneNumber = it },
                 label = "Phone Number",
                 prefix = "+",
                 leadingIcon = Icons.Filled.Phone,
-                isError = viewModel.phoneNumberError,
+                isError = loginViewModel.phoneNumberError,
+                keyboardType = KeyboardType.Number
             )
-            LoginTextField(
-                value = viewModel.email,
-                onValueChange = { viewModel.email = it },
+            CustomTextField(
+                value = loginViewModel.email,
+                onValueChange = { loginViewModel.email = it },
                 label = "Email",
                 leadingIcon = Icons.Filled.Email,
                 supportingText = "optional",
-                isError = viewModel.emailError,
+                isError = loginViewModel.emailError,
+                keyboardType = KeyboardType.Email
             )
 
             Spacer(modifier = Modifier.height(0.05.dw))
 
-            FilledIconButton(
-                modifier = Modifier.width(0.20.dw),
+            Button(
                 onClick = {
-                    if (viewModel.validateFields()) {
-
-                    }
+                    loginViewModel.login(navController)
                 }
             ) {
-                Text("LogIn")
+                Text("Next")
             }
 
             if (imeState.value) {

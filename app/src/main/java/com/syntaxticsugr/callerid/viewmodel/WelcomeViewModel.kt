@@ -22,7 +22,7 @@ class WelcomeViewModel(
         doNotShowWelcomePage()
 
         navController.navigate(Screens.Permissions.route) {
-            popUpTo(Screens.Permissions.route) {
+            popUpTo(Screens.Welcome.route) {
                 inclusive = true
             }
         }

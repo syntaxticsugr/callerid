@@ -35,4 +35,23 @@ class DataStorePref(context: Context) {
         }
     }
 
+    suspend fun writeString(key: String, value: String) {
+        val prefKey = stringPreferencesKey(name = key)
+
+        dataStore.edit { preferences ->
+            preferences[prefKey] = value
+        }
+    }
+
+    suspend fun readString(key: String, default: String): String {
+        val prefKey = stringPreferencesKey(name = key)
+
+        return try {
+            val preferences = dataStore.data.first()
+            preferences[prefKey] ?: default
+        } catch (e: IOException) {
+            default
+        }
+    }
+    
 }
