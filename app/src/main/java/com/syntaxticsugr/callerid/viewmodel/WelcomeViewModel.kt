@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class WelcomeViewModel(
-    private val pref: DataStorePref,
+    private val pref: DataStorePref
 ) : ViewModel() {
 
     private fun doNotShowWelcomePage() {

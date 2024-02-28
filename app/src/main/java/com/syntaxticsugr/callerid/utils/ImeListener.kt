@@ -12,9 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 
 @Composable
 fun rememberImeState(): State<Boolean> {
-    val imeState = remember {
-        mutableStateOf(false)
-    }
+    val imeState = remember { mutableStateOf(false) }
 
     val view = LocalView.current
     DisposableEffect(view) {
@@ -29,5 +27,6 @@ fun rememberImeState(): State<Boolean> {
             view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
         }
     }
+
     return imeState
 }

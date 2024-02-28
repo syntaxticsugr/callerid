@@ -13,20 +13,17 @@ import androidx.lifecycle.viewModelScope
 import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.permissions.requiredPermissions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.Timer
-import kotlin.concurrent.timerTask
 
 class SplashViewModel(
     application: Application,
-    private val pref: DataStorePref,
-): ViewModel() {
+    private val pref: DataStorePref
+) : ViewModel() {
 
     private val appContext: Context = application.applicationContext
-
     private val asd = appContext.filesDir
-
     private val authfile = "authkey.json"
 
     private val _isLoading: MutableState<Boolean> = mutableStateOf(true)
@@ -41,23 +38,26 @@ class SplashViewModel(
         }, 500)
     }
 
-    private suspend fun setStartDestination() {
-        for (permission in requiredPermissions) {
-            if (appContext.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                _startDestination.value = Screens.Permissions.route
-                break
-            }
-        }
+    private fun setStartDestination() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val showWelcomePage = pref.readBool(key = "showWelcomePage", default = true)
 
-        pref.readBool(key = "showWelcomePage", default = true).collect { value ->
-            _startDestination.value = if (value) {
-                Screens.Welcome.route
+            if (showWelcomePage) {
+                _startDestination.value = Screens.Welcome.route
             } else {
                 val authKey = File(asd, authfile)
+
                 if (authKey.exists()) {
-                    Screens.Home.route
+                    _startDestination.value = Screens.Home.route
                 } else {
-                    Screens.LogIn.route
+                    _startDestination.value = Screens.LogIn.route
+                }
+
+                for (permission in requiredPermissions) {
+                    if (appContext.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                        _startDestination.value = Screens.Permissions.route
+                        break
+                    }
                 }
             }
 
@@ -65,14 +65,11 @@ class SplashViewModel(
         }
     }
 
-    private suspend fun setStartDestinationAndRemoveSplash() {
+    private fun setStartDestinationAndRemoveSplash() {
         setStartDestination()
     }
 
     init {
-        viewModelScope.launch {
-            setStartDestinationAndRemoveSplash()
-        }
+        setStartDestinationAndRemoveSplash()
     }
-
 }

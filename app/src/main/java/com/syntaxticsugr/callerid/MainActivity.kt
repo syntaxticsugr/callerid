@@ -17,11 +17,10 @@ import com.syntaxticsugr.callerid.viewmodel.SplashViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : ComponentActivity() {
+
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        initSize()
 
         val splashViewModel = getViewModel<SplashViewModel>()
 
@@ -35,8 +34,10 @@ class MainActivity : ComponentActivity() {
             ),
             navigationBarStyle = SystemBarStyle.light(
                 Color.TRANSPARENT, Color.TRANSPARENT
-            ),
+            )
         )
+
+        initSize()
 
         setContent {
             CallerIDTheme {
@@ -45,5 +46,7 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(navController = navController, startDestination = startDestination)
             }
         }
+
     }
+
 }

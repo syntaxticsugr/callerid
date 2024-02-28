@@ -21,23 +21,23 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun WelcomeScreen(
     navController: NavHostController,
-    viewModel: WelcomeViewModel = koinViewModel(),
+    welcomeViewModel: WelcomeViewModel = koinViewModel()
 ) {
 
-    Scaffold() {innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 0.10.dw),
             horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
-                "CallerID\n------------\nCaller Identification without the headache of a complex UI and annoying ads.",
-                textAlign = TextAlign.Start,
                 modifier = Modifier
                     .fillMaxWidth(),
+                text = "CallerID\n------------\nCaller Identification without the headache of a complex UI and annoying ads.",
+                textAlign = TextAlign.Start,
             )
 
             FilledIconButton(
@@ -45,11 +45,11 @@ fun WelcomeScreen(
                     .width(0.20.dw)
                     .padding(top = 0.20.dw),
                 onClick = {
-                    viewModel.nextScreen(navController)
+                    welcomeViewModel.nextScreen(navController)
                 }
             ) {
                 Text(
-                    "Next",
+                    text = "Next",
                 )
             }
         }

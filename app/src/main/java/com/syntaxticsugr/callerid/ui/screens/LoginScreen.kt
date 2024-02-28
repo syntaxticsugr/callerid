@@ -29,28 +29,28 @@ import com.syntaxticsugr.callerid.viewmodel.LoginViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LoginScreen(
+fun LogInScreen(
     navController: NavHostController,
     viewModel: LoginViewModel = koinViewModel()
 ) {
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(key1 = imeState.value) {
+    LaunchedEffect(imeState.value) {
         if (imeState.value) {
-            scrollState.animateScrollTo(scrollState.maxValue, tween(300))
+            scrollState.animateScrollTo(scrollState.maxValue, tween(400))
         }
     }
 
-    Scaffold() { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(scrollState)
                 .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(0.50.dw))
+            Spacer(modifier = Modifier.height(0.25.dh))
 
             LoginTextField(
                 value = viewModel.firstName,
