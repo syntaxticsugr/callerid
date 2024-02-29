@@ -37,13 +37,13 @@ class LoginViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             pref.writeString(key = "firstName", value = firstName)
             pref.writeString(key = "lastName", value = lastName)
-            pref.writeString(key = "phoneNumber", value = phoneNumber)
+            pref.writeString(key = "phoneNumber", value = "+${phoneNumber}")
             pref.writeString(key = "email", value = email)
         }
     }
 
     private fun checkName(name: String): Boolean {
-        return (name.isBlank() || !name.matches(Regex("^[a-zA-Z]+$")))
+        return (name.isBlank() || !name.matches(Regex("^[a-zA-Z\\s]+$")))
     }
 
     private fun validateFields(): Boolean {

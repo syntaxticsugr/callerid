@@ -34,7 +34,7 @@ val calleridModule = module {
     }
 
     viewModel<VerifyViewModel> {
-        VerifyViewModel(get())
+        VerifyViewModel(androidApplication(), get())
     }
 
 }
