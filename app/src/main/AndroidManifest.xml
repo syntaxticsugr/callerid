@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
 
     <application
         android:name=".CallerID"
@@ -17,9 +18,9 @@
         tools:targetApi="34">
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustResize"
             android:exported="true"
-            android:theme="@style/Theme.CallerIDSplashTheme">
+            android:theme="@style/Theme.CallerIDSplashTheme"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -53,5 +53,5 @@ class DataStorePref(context: Context) {
             default
         }
     }
-    
+
 }
