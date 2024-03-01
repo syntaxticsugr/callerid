@@ -10,8 +10,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.truecaller.TrueCallerApiClient
+import com.syntaxticsugr.callerid.truecaller.datamodel.RequestResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileWriter
 
 class VerifyViewModel(
     application: Application,
@@ -25,16 +28,32 @@ class VerifyViewModel(
     lateinit var phoneNumber: String
     lateinit var email: String
 
+    private lateinit var requestResponse: RequestResponse
+
     var otp by mutableStateOf("")
     var otpError by mutableStateOf(false)
 
-    fun verifyOTP(navController: NavController) {
+    private val asd = appContext.filesDir
 
+    fun verifyOTP(navController: NavController) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val verifyResponse =
+                TrueCallerApiClient().verifyOtp(phoneNumber, requestResponse.requestId, otp)
+
+            if ((verifyResponse.status != 11) || (verifyResponse.suspended == false)) {
+                val authKeyFile = File(asd, "auth.key")
+                authKeyFile.createNewFile()
+                val writer = FileWriter(authKeyFile)
+                writer.write(verifyResponse.installationId)
+                writer.flush()
+                writer.close()
+            }
+        }
     }
 
     private fun requestOTP() {
         viewModelScope.launch(Dispatchers.IO) {
-            TrueCallerApiClient().requestOTP(phoneNumber, appContext)
+            requestResponse = TrueCallerApiClient().requestOtp(phoneNumber, appContext)
         }
     }
 

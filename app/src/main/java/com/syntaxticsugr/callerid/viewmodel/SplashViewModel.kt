@@ -24,7 +24,7 @@ class SplashViewModel(
 
     private val appContext: Context = application.applicationContext
     private val asd = appContext.filesDir
-    private val authfile = "authkey.json"
+    private val authfile = "auth.key"
 
     private val _isLoading: MutableState<Boolean> = mutableStateOf(true)
     val isLoading: State<Boolean> = _isLoading

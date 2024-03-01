@@ -4,7 +4,7 @@ import android.content.Context
 import com.syntaxticsugr.callerid.truecaller.datamodel.App
 import com.syntaxticsugr.callerid.truecaller.datamodel.Device
 import com.syntaxticsugr.callerid.truecaller.datamodel.InstallationDetails
-import com.syntaxticsugr.callerid.truecaller.datamodel.PostBodyRequestOtp
+import com.syntaxticsugr.callerid.truecaller.datamodel.RequestOtp
 import com.syntaxticsugr.callerid.truecaller.datamodel.Version
 import com.syntaxticsugr.callerid.truecaller.utils.getAndroidVersion
 import com.syntaxticsugr.callerid.truecaller.utils.getCountryCode
@@ -19,8 +19,8 @@ fun postBodyRequestOtp(
     context: Context,
     phoneNumber: String,
     trueCallerAppVersion: Version
-): PostBodyRequestOtp {
-    return PostBodyRequestOtp(
+): RequestOtp {
+    return RequestOtp(
         countryCode = getCountryCode(phoneNumber),
         dialingCode = getDialingCode(phoneNumber),
         installationDetails = InstallationDetails(

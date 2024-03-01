@@ -1,10 +1,14 @@
 package com.syntaxticsugr.callerid.truecaller
 
 import android.content.Context
+import com.syntaxticsugr.callerid.truecaller.datamodel.RequestResponse
+import com.syntaxticsugr.callerid.truecaller.datamodel.VerifyResponse
 import com.syntaxticsugr.callerid.truecaller.datamodel.Version
 import com.syntaxticsugr.callerid.truecaller.postbody.postBodyRequestOtp
+import com.syntaxticsugr.callerid.truecaller.postbody.postBodyVerifyOtp
 import com.syntaxticsugr.callerid.truecaller.utils.getAndroidVersion
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -62,14 +66,32 @@ class TrueCallerApiClient {
 
     private var httpClient = createClient()
 
-    suspend fun requestOTP(phoneNumber: String, context: Context) = httpClient.post {
-        val postBodyRequestOTP = postBodyRequestOtp(context, phoneNumber, trueCallerAppVersion)
+    suspend fun requestOtp(phoneNumber: String, context: Context): RequestResponse {
+        val postBodyRequestOtp = postBodyRequestOtp(context, phoneNumber, trueCallerAppVersion)
 
-        truecallerClient()
-        url("https://account-asia-south1.truecaller.com/v2/sendOnboardingOtp")
-        setBody(
-            Json.encodeToString(postBodyRequestOTP)
-        )
+        val response = httpClient.post {
+            truecallerClient()
+            url("https://account-asia-south1.truecaller.com/v3/sendOnboardingOtp")
+            setBody(
+                Json.encodeToString(postBodyRequestOtp)
+            )
+        }
+
+        return response.body<RequestResponse>()
+    }
+
+    suspend fun verifyOtp(phoneNumber: String, requestId: String, token: String): VerifyResponse {
+        val postBodyVerifyOtp = postBodyVerifyOtp(phoneNumber, requestId, token)
+
+        val response = httpClient.post {
+            truecallerClient()
+            url("https://account-asia-south1.truecaller.com/v1/verifyOnboardingOtp")
+            setBody(
+                Json.encodeToString(postBodyVerifyOtp)
+            )
+        }
+
+        return response.body<VerifyResponse>()
     }
 
 }

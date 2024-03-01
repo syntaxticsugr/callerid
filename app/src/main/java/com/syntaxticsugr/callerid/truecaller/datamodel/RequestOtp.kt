@@ -3,7 +3,7 @@ package com.syntaxticsugr.callerid.truecaller.datamodel
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PostBodyRequestOtp(
+data class RequestOtp(
     val countryCode: String,
     val dialingCode: Int,
     val installationDetails: InstallationDetails,
