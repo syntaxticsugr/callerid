@@ -3,7 +3,7 @@ package com.syntaxticsugr.callerid.truecaller.datamodel
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class App(
+data class AppDataModel(
     val buildVersion: Int,
     val majorVersion: Int,
     val minorVersion: Int,

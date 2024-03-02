@@ -3,10 +3,10 @@ package com.syntaxticsugr.callerid.truecaller.datamodel
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RequestOtp(
+data class RequestOtpDataModel(
     val countryCode: String,
     val dialingCode: Int,
-    val installationDetails: InstallationDetails,
+    val installationDetails: InstallationDetailsDataModel,
     val phoneNumber: String,
     val region: String,
     val sequenceNo: Int

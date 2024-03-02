@@ -88,7 +88,7 @@ fun LogInScreen(
 
             Button(
                 onClick = {
-                    loginViewModel.login(navController)
+                    loginViewModel.nextScreen(navController)
                 }
             ) {
                 Text("Next")

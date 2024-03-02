@@ -3,7 +3,7 @@ package com.syntaxticsugr.callerid.truecaller.datamodel
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RequestResponse(
+data class RequestResponseDataModel(
     val status: Int,
     val message: String,
     val domain: String,

@@ -1,11 +1,11 @@
 package com.syntaxticsugr.callerid.truecaller.postbody
 
 import android.content.Context
-import com.syntaxticsugr.callerid.truecaller.datamodel.App
-import com.syntaxticsugr.callerid.truecaller.datamodel.Device
-import com.syntaxticsugr.callerid.truecaller.datamodel.InstallationDetails
-import com.syntaxticsugr.callerid.truecaller.datamodel.RequestOtp
-import com.syntaxticsugr.callerid.truecaller.datamodel.Version
+import com.syntaxticsugr.callerid.truecaller.datamodel.AppDataModel
+import com.syntaxticsugr.callerid.truecaller.datamodel.DeviceDataModel
+import com.syntaxticsugr.callerid.truecaller.datamodel.InstallationDetailsDataModel
+import com.syntaxticsugr.callerid.truecaller.datamodel.RequestOtpDataModel
+import com.syntaxticsugr.callerid.truecaller.datamodel.VersionDataModel
 import com.syntaxticsugr.callerid.truecaller.utils.getAndroidVersion
 import com.syntaxticsugr.callerid.truecaller.utils.getCountryCode
 import com.syntaxticsugr.callerid.truecaller.utils.getDeviceId
@@ -18,20 +18,20 @@ import com.syntaxticsugr.callerid.truecaller.utils.getMobileServices
 fun postBodyRequestOtp(
     context: Context,
     phoneNumber: String,
-    trueCallerAppVersion: Version
-): RequestOtp {
-    return RequestOtp(
+    trueCallerAppVersion: VersionDataModel
+): RequestOtpDataModel {
+    return RequestOtpDataModel(
         countryCode = getCountryCode(phoneNumber),
         dialingCode = getDialingCode(phoneNumber),
-        installationDetails = InstallationDetails(
-            app = App(
+        installationDetails = InstallationDetailsDataModel(
+            app = AppDataModel(
                 buildVersion = trueCallerAppVersion.buildVersion,
                 majorVersion = trueCallerAppVersion.majorVersion,
                 minorVersion = trueCallerAppVersion.minorVersion,
                 store = "GOOGLE_PLAY",
                 updatedStore = null
             ),
-            device = Device(
+            device = DeviceDataModel(
                 deviceId = getDeviceId(context),
                 language = getDeviceLanguage(),
                 manufacturer = getDeviceManufacturer(),
@@ -43,7 +43,7 @@ fun postBodyRequestOtp(
             ),
             language = "en",
             sims = null,
-            storeVersion = Version(
+            storeVersion = VersionDataModel(
                 buildVersion = trueCallerAppVersion.buildVersion,
                 majorVersion = trueCallerAppVersion.majorVersion,
                 minorVersion = trueCallerAppVersion.minorVersion

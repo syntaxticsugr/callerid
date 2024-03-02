@@ -4,40 +4,26 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.enums.PermissionsResult
 import com.syntaxticsugr.callerid.navigation.Screens
-import com.syntaxticsugr.callerid.permissions.requiredPermissions
-import java.io.File
+import com.syntaxticsugr.callerid.utils.AuthKeyManager
+import com.syntaxticsugr.callerid.utils.PermissionsManager
 
 class PermissionsViewModel(
     application: Application
 ) : ViewModel() {
 
     private val appContext: Context = application.applicationContext
-    private val asd = appContext.filesDir
-    private val authfile = "authkey.json"
 
-    fun nextScreen(navController: NavController) {
-        val authKey = File(asd, authfile)
-
-        if (authKey.exists()) {
-            navController.navigate(Screens.Home.route) {
-                popUpTo(Screens.Permissions.route) {
-                    inclusive = true
-                }
-            }
-        } else {
-            navController.navigate(Screens.LogIn.route) {
-                popUpTo(Screens.Permissions.route) {
-                    inclusive = true
-                }
-            }
+    fun getButtonText(context: Context): String {
+        return when (PermissionsManager.arePermissionsGranted(context)) {
+            PermissionsResult.CAN_REQUEST -> "Grant"
+            PermissionsResult.ALL_GRANTED -> "Next"
+            PermissionsResult.PERMANENTLY_DENIED -> "Settings"
         }
     }
 
@@ -49,31 +35,19 @@ class PermissionsViewModel(
         activity.startActivity(intent)
     }
 
-    private fun arePermissionsGranted(context: Context): PermissionsResult {
-        val allPermissionsGranted = requiredPermissions.all {
-            ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-        }
-
-        return if (allPermissionsGranted) {
-            PermissionsResult.ALL_GRANTED
+    fun nextScreen(navController: NavController) {
+        if (AuthKeyManager.getAuthKey(appContext) != null) {
+            navController.navigate(Screens.Home.route) {
+                popUpTo(Screens.Permissions.route) {
+                    inclusive = true
+                }
+            }
         } else {
-            val canRequestSettings = requiredPermissions.any {
-                !ActivityCompat.shouldShowRequestPermissionRationale(context as Activity, it)
+            navController.navigate(Screens.LogIn.route) {
+                popUpTo(Screens.Permissions.route) {
+                    inclusive = true
+                }
             }
-
-            if (canRequestSettings) {
-                PermissionsResult.CAN_REQUEST
-            } else {
-                PermissionsResult.PERMANENTLY_DENIED
-            }
-        }
-    }
-
-    fun getButtonText(context: Context): String {
-        return when (arePermissionsGranted(context)) {
-            PermissionsResult.CAN_REQUEST -> "Grant"
-            PermissionsResult.ALL_GRANTED -> "Next"
-            PermissionsResult.PERMANENTLY_DENIED -> "Settings"
         }
     }
 

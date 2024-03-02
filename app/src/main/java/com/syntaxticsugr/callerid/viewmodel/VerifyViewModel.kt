@@ -10,11 +10,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.truecaller.TrueCallerApiClient
-import com.syntaxticsugr.callerid.truecaller.datamodel.RequestResponse
+import com.syntaxticsugr.callerid.truecaller.datamodel.RequestResponseDataModel
+import com.syntaxticsugr.callerid.utils.AuthKeyManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileWriter
 
 class VerifyViewModel(
     application: Application,
@@ -28,32 +27,25 @@ class VerifyViewModel(
     lateinit var phoneNumber: String
     lateinit var email: String
 
-    private lateinit var requestResponse: RequestResponse
+    private lateinit var requestResponse: RequestResponseDataModel
 
     var otp by mutableStateOf("")
     var otpError by mutableStateOf(false)
-
-    private val asd = appContext.filesDir
 
     fun verifyOTP(navController: NavController) {
         viewModelScope.launch(Dispatchers.IO) {
             val verifyResponse =
                 TrueCallerApiClient().verifyOtp(phoneNumber, requestResponse.requestId, otp)
 
-            if ((verifyResponse.status != 11) || (verifyResponse.suspended == false)) {
-                val authKeyFile = File(asd, "auth.key")
-                authKeyFile.createNewFile()
-                val writer = FileWriter(authKeyFile)
-                writer.write(verifyResponse.installationId)
-                writer.flush()
-                writer.close()
+            if ((verifyResponse.status != 11) && (verifyResponse.suspended == false)) {
+                AuthKeyManager.saveAuthKey(appContext, verifyResponse.installationId)
             }
         }
     }
 
     private fun requestOTP() {
         viewModelScope.launch(Dispatchers.IO) {
-            requestResponse = TrueCallerApiClient().requestOtp(phoneNumber, appContext)
+            requestResponse = TrueCallerApiClient().requestOtp(appContext, phoneNumber)
         }
     }
 
@@ -66,15 +58,9 @@ class VerifyViewModel(
         }
     }
 
-    private fun getUserCredsAndRequestOTP() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getUserCreds()
-            requestOTP()
-        }
-    }
-
     init {
-        getUserCredsAndRequestOTP()
+        getUserCreds()
+        requestOTP()
     }
 
 }

@@ -1,9 +1,9 @@
 package com.syntaxticsugr.callerid.truecaller
 
 import android.content.Context
-import com.syntaxticsugr.callerid.truecaller.datamodel.RequestResponse
-import com.syntaxticsugr.callerid.truecaller.datamodel.VerifyResponse
-import com.syntaxticsugr.callerid.truecaller.datamodel.Version
+import com.syntaxticsugr.callerid.truecaller.datamodel.RequestResponseDataModel
+import com.syntaxticsugr.callerid.truecaller.datamodel.VerifyResponseDataModel
+import com.syntaxticsugr.callerid.truecaller.datamodel.VersionDataModel
 import com.syntaxticsugr.callerid.truecaller.postbody.postBodyRequestOtp
 import com.syntaxticsugr.callerid.truecaller.postbody.postBodyVerifyOtp
 import com.syntaxticsugr.callerid.truecaller.utils.getAndroidVersion
@@ -26,7 +26,7 @@ import kotlinx.serialization.json.Json
 
 class TrueCallerApiClient {
 
-    private val trueCallerAppVersion = Version(
+    private val trueCallerAppVersion = VersionDataModel(
         buildVersion = 8,
         majorVersion = 13,
         minorVersion = 56
@@ -66,7 +66,7 @@ class TrueCallerApiClient {
 
     private var httpClient = createClient()
 
-    suspend fun requestOtp(phoneNumber: String, context: Context): RequestResponse {
+    suspend fun requestOtp(context: Context, phoneNumber: String): RequestResponseDataModel {
         val postBodyRequestOtp = postBodyRequestOtp(context, phoneNumber, trueCallerAppVersion)
 
         val response = httpClient.post {
@@ -77,10 +77,10 @@ class TrueCallerApiClient {
             )
         }
 
-        return response.body<RequestResponse>()
+        return response.body<RequestResponseDataModel>()
     }
 
-    suspend fun verifyOtp(phoneNumber: String, requestId: String, token: String): VerifyResponse {
+    suspend fun verifyOtp(phoneNumber: String, requestId: String, token: String): VerifyResponseDataModel {
         val postBodyVerifyOtp = postBodyVerifyOtp(phoneNumber, requestId, token)
 
         val response = httpClient.post {
@@ -91,7 +91,7 @@ class TrueCallerApiClient {
             )
         }
 
-        return response.body<VerifyResponse>()
+        return response.body<VerifyResponseDataModel>()
     }
 
 }

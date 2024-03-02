@@ -16,29 +16,23 @@ class LoginViewModel(
 ) : ViewModel() {
 
     var firstName by mutableStateOf("")
-    var lastName by mutableStateOf("")
-    var phoneNumber by mutableStateOf("")
-    var email by mutableStateOf("")
-
     var firstNameError by mutableStateOf(false)
-    var lastNameError by mutableStateOf(false)
-    var phoneNumberError by mutableStateOf(false)
-    var emailError by mutableStateOf(false)
 
-    private fun nextScreen(navController: NavController) {
-        navController.navigate(Screens.Verify.route) {
-            popUpTo(Screens.LogIn.route) {
-                inclusive = false
-            }
-        }
-    }
+    var lastName by mutableStateOf("")
+    var lastNameError by mutableStateOf(false)
+
+    var phoneNumber by mutableStateOf("")
+    var phoneNumberError by mutableStateOf(false)
+
+    var email by mutableStateOf("")
+    var emailError by mutableStateOf(false)
 
     private fun saveUserCreds() {
         viewModelScope.launch(Dispatchers.IO) {
-            pref.writeString(key = "firstName", value = firstName)
-            pref.writeString(key = "lastName", value = lastName)
+            pref.writeString(key = "firstName", value = firstName.trim())
+            pref.writeString(key = "lastName", value = lastName.trim())
             pref.writeString(key = "phoneNumber", value = "+${phoneNumber}")
-            pref.writeString(key = "email", value = email)
+            pref.writeString(key = "email", value = email.trim())
         }
     }
 
@@ -70,11 +64,15 @@ class LoginViewModel(
         return isValid
     }
 
-    fun login(navController: NavController) {
+    fun nextScreen(navController: NavController) {
         if (validateFields()) {
             saveUserCreds()
 
-            nextScreen(navController)
+            navController.navigate(Screens.Verify.route) {
+                popUpTo(Screens.LogIn.route) {
+                    inclusive = false
+                }
+            }
         }
     }
 

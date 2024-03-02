@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dw
-import com.syntaxticsugr.callerid.permissions.requiredPermissions
+import com.syntaxticsugr.callerid.utils.PermissionsManager
 import com.syntaxticsugr.callerid.viewmodel.PermissionsViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -77,7 +77,7 @@ fun PermissionsScreen(
             Button(
                 onClick = {
                     when (buttonText) {
-                        "Grant" -> permissionLauncher.launch(requiredPermissions)
+                        "Grant" -> permissionLauncher.launch(PermissionsManager.requiredPermissions)
                         "Next" -> permissionViewModel.nextScreen(navController)
                         "Settings" -> permissionViewModel.openAppSettings(context as Activity)
                     }

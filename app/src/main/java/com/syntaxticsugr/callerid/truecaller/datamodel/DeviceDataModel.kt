@@ -3,7 +3,7 @@ package com.syntaxticsugr.callerid.truecaller.datamodel
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Device(
+data class DeviceDataModel(
     val deviceId: String,
     val language: String,
     val manufacturer: String,
