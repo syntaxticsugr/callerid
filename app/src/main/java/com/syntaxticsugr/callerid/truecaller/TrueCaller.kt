@@ -1,12 +1,11 @@
 package com.syntaxticsugr.callerid.truecaller
 
 import android.content.Context
-import com.syntaxticsugr.callerid.truecaller.datamodel.RequestResponseDataModel
-import com.syntaxticsugr.callerid.truecaller.datamodel.VerifyResponseDataModel
 import com.syntaxticsugr.callerid.truecaller.datamodel.VersionDataModel
 import com.syntaxticsugr.callerid.truecaller.postbody.postBodyRequestOtp
 import com.syntaxticsugr.callerid.truecaller.postbody.postBodyVerifyOtp
 import com.syntaxticsugr.callerid.truecaller.utils.getAndroidVersion
+import com.syntaxticsugr.callerid.truecaller.utils.stringToJson
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
@@ -23,6 +22,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.json.JSONObject
 
 class TrueCallerApiClient {
 
@@ -40,7 +40,7 @@ class TrueCallerApiClient {
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun createClient() = HttpClient(OkHttp) {
-        expectSuccess = true
+//        expectSuccess = true
 
         install(ContentNegotiation) {
             json(Json {
@@ -66,7 +66,7 @@ class TrueCallerApiClient {
 
     private var httpClient = createClient()
 
-    suspend fun requestOtp(context: Context, phoneNumber: String): RequestResponseDataModel {
+    suspend fun requestOtp(context: Context, phoneNumber: String): JSONObject {
         val postBodyRequestOtp = postBodyRequestOtp(context, phoneNumber, trueCallerAppVersion)
 
         val response = httpClient.post {
@@ -77,10 +77,10 @@ class TrueCallerApiClient {
             )
         }
 
-        return response.body<RequestResponseDataModel>()
+        return stringToJson(response.body<String>())
     }
 
-    suspend fun verifyOtp(phoneNumber: String, requestId: String, token: String): VerifyResponseDataModel {
+    suspend fun verifyOtp(phoneNumber: String, requestId: String, token: String): JSONObject {
         val postBodyVerifyOtp = postBodyVerifyOtp(phoneNumber, requestId, token)
 
         val response = httpClient.post {
@@ -91,7 +91,7 @@ class TrueCallerApiClient {
             )
         }
 
-        return response.body<VerifyResponseDataModel>()
+        return stringToJson(response.body<String>())
     }
 
 }

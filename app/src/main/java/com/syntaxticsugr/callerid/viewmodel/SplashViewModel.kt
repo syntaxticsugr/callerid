@@ -2,8 +2,6 @@ package com.syntaxticsugr.callerid.viewmodel
 
 import android.app.Application
 import android.content.Context
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,22 +21,19 @@ class SplashViewModel(
 
     private val appContext: Context = application.applicationContext
 
-    private val _isLoading: MutableState<Boolean> = mutableStateOf(true)
-    val isLoading: State<Boolean> = _isLoading
-
-    private val _startDestination: MutableState<String> = mutableStateOf(Screens.Welcome.route)
-    val startDestination: State<String> = _startDestination
+    val isLoading = mutableStateOf(true)
+    val startDestination = mutableStateOf(Screens.Welcome.route)
 
     private fun removeSplash() {
         viewModelScope.launch {
             delay(500)
-            _isLoading.value = false
+            isLoading.value = false
         }
     }
 
     private fun checkPermissions() {
         if (PermissionsManager.arePermissionsGranted(appContext) != PermissionsResult.ALL_GRANTED) {
-            _startDestination.value = Screens.Permissions.route
+            startDestination.value = Screens.Permissions.route
         }
     }
 
@@ -47,12 +42,12 @@ class SplashViewModel(
             val showWelcomePage = pref.readBool(key = "showWelcomePage", default = true)
 
             if (showWelcomePage) {
-                _startDestination.value = Screens.Welcome.route
+                startDestination.value = Screens.Welcome.route
             } else {
                 if (AuthKeyManager.getAuthKey(appContext) != null) {
-                    _startDestination.value = Screens.Home.route
+                    startDestination.value = Screens.Home.route
                 } else {
-                    _startDestination.value = Screens.LogIn.route
+                    startDestination.value = Screens.LogIn.route
                 }
 
                 checkPermissions()

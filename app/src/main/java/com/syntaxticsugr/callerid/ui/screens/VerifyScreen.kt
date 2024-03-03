@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.viewmodel.VerifyViewModel
@@ -24,6 +26,8 @@ fun VerifyScreen(
     navController: NavHostController,
     verifyViewModel: VerifyViewModel = koinViewModel()
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold { innerPadding ->
         Column(
@@ -54,23 +58,56 @@ fun VerifyScreen(
 
             Spacer(modifier = Modifier.height(0.05.dw))
 
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                value = verifyViewModel.otp,
-                onValueChange = { verifyViewModel.otp = it },
-                label = { Text("OTP") },
-                isError = verifyViewModel.otpError
-            )
+            if (verifyViewModel.isOtpSent) {
+                if (verifyViewModel.isVerifying) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
-            Spacer(modifier = Modifier.height(0.05.dw))
+                    Spacer(modifier = Modifier.height(0.01.dw))
 
-            Button(
-                onClick = {
-                    verifyViewModel.verifyOTP(navController)
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = "Verifying OTP"
+                    )
+                } else {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        value = verifyViewModel.otp,
+                        onValueChange = { verifyViewModel.otp = it },
+                        label = { Text("OTP") },
+                        isError = verifyViewModel.otpError
+                    )
+
+                    Spacer(modifier = Modifier.height(0.10.dw))
+
+                    Button(
+                        onClick = {
+                            keyboardController?.hide()
+                            verifyViewModel.verifyOTP(navController)
+                        }
+                    ) {
+                        Text("Verify OTP")
+                    }
                 }
-            ) {
-                Text("Verify OTP")
+            } else {
+                if (verifyViewModel.unexpectedError) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = verifyViewModel.getErrorMessage()
+                    )
+                } else {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+
+                    Spacer(modifier = Modifier.height(0.01.dw))
+
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        text = "Requesting OTP"
+                    )
+                }
             }
         }
     }

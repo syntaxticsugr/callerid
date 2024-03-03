@@ -20,10 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dh
 import com.slaviboy.composeunits.dw
+import com.syntaxticsugr.callerid.utils.getDeviceRegion
+import com.syntaxticsugr.callerid.utils.getDialingCode
 import com.syntaxticsugr.callerid.utils.rememberImeState
 import com.syntaxticsugr.callerid.viewmodel.LoginViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -33,12 +36,17 @@ fun LogInScreen(
     navController: NavHostController,
     loginViewModel: LoginViewModel = koinViewModel()
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val imeState = rememberImeState()
     val scrollState = rememberScrollState()
 
     LaunchedEffect(imeState.value) {
         if (imeState.value) {
             scrollState.animateScrollTo(scrollState.maxValue, tween(400))
+        } else {
+            scrollState.animateScrollTo(0, tween(400))
         }
     }
 
@@ -46,7 +54,7 @@ fun LogInScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .verticalScroll(scrollState)
+                .verticalScroll(scrollState, enabled = false)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -69,7 +77,7 @@ fun LogInScreen(
                 value = loginViewModel.phoneNumber,
                 onValueChange = { loginViewModel.phoneNumber = it },
                 label = "Phone Number",
-                prefix = "+",
+                prefix = getDialingCode(getDeviceRegion()),
                 leadingIcon = Icons.Filled.Phone,
                 isError = loginViewModel.phoneNumberError,
                 keyboardType = KeyboardType.Number
@@ -88,15 +96,14 @@ fun LogInScreen(
 
             Button(
                 onClick = {
+                    keyboardController?.hide()
                     loginViewModel.nextScreen(navController)
                 }
             ) {
                 Text("Next")
             }
 
-            if (imeState.value) {
-                Spacer(modifier = Modifier.height(0.40.dh))
-            }
+            Spacer(modifier = Modifier.height(0.40.dh))
         }
     }
 

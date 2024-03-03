@@ -8,6 +8,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.navigation.Screens
+import com.syntaxticsugr.callerid.utils.getDeviceRegion
+import com.syntaxticsugr.callerid.utils.getDialingCode
+import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -27,17 +30,17 @@ class LoginViewModel(
     var email by mutableStateOf("")
     var emailError by mutableStateOf(false)
 
+    private fun phoneNumberWithDialingCode(): String {
+        return "${getDialingCode(getDeviceRegion())}${phoneNumber.trim()}"
+    }
+
     private fun saveUserCreds() {
         viewModelScope.launch(Dispatchers.IO) {
             pref.writeString(key = "firstName", value = firstName.trim())
             pref.writeString(key = "lastName", value = lastName.trim())
-            pref.writeString(key = "phoneNumber", value = "+${phoneNumber}")
+            pref.writeString(key = "phoneNumber", value = phoneNumberWithDialingCode())
             pref.writeString(key = "email", value = email.trim())
         }
-    }
-
-    private fun checkName(name: String): Boolean {
-        return (name.isBlank() || !name.matches(Regex("^[a-zA-Z\\s]+$")))
     }
 
     private fun validateFields(): Boolean {
@@ -48,15 +51,18 @@ class LoginViewModel(
 
         var isValid = true
 
-        if (checkName(firstName)) {
+        if (firstName.isBlank()) {
             firstNameError = true
             isValid = false
         }
-        if (checkName(lastName)) {
+        if (lastName.isBlank()) {
             lastNameError = true
             isValid = false
         }
-        if (phoneNumber.isBlank()) {
+        if (!phoneNumber.matches(Regex("^\\s*\\d{2,}\\s*$")) || !isValidPhoneNumber(
+                phoneNumberWithDialingCode()
+            )
+        ) {
             phoneNumberError = true
             isValid = false
         }

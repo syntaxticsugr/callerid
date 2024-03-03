@@ -9,11 +9,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.datastore.DataStorePref
+import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.truecaller.TrueCallerApiClient
-import com.syntaxticsugr.callerid.truecaller.datamodel.RequestResponseDataModel
 import com.syntaxticsugr.callerid.utils.AuthKeyManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class VerifyViewModel(
     application: Application,
@@ -27,18 +28,53 @@ class VerifyViewModel(
     lateinit var phoneNumber: String
     lateinit var email: String
 
-    private lateinit var requestResponse: RequestResponseDataModel
+    private lateinit var requestResponse: JSONObject
+
+    var isOtpSent by mutableStateOf(false)
+    var unexpectedError by mutableStateOf(false)
+    var isVerifying by mutableStateOf(false)
 
     var otp by mutableStateOf("")
     var otpError by mutableStateOf(false)
 
+    fun getErrorMessage(): String {
+        return "${requestResponse.getString("message")} :("
+    }
+
+    fun nextScreen(navController: NavController) {
+        navController.navigate(Screens.Home.route) {
+            popUpTo(Screens.Verify.route) {
+                inclusive = false
+            }
+        }
+    }
+
     fun verifyOTP(navController: NavController) {
         viewModelScope.launch(Dispatchers.IO) {
-            val verifyResponse =
-                TrueCallerApiClient().verifyOtp(phoneNumber, requestResponse.requestId, otp)
+            if (!otp.matches(Regex("^\\s*\\d{6}\\s*\$"))) {
+                otpError = true
+            } else {
+                otpError = false
+                isVerifying = true
 
-            if ((verifyResponse.status != 11) && (verifyResponse.suspended == false)) {
-                AuthKeyManager.saveAuthKey(appContext, verifyResponse.installationId)
+                val verifyResponse =
+                    TrueCallerApiClient().verifyOtp(
+                        phoneNumber,
+                        requestResponse.getString("requestId"),
+                        otp
+                    )
+
+                if ((verifyResponse.getInt("status") != 11) && !verifyResponse.getBoolean("suspended")) {
+                    AuthKeyManager.saveAuthKey(
+                        appContext,
+                        verifyResponse.getString("installationId")
+                    )
+
+                    nextScreen(navController)
+                } else {
+                    isVerifying = false
+                    otpError = true
+                }
             }
         }
     }
@@ -46,6 +82,13 @@ class VerifyViewModel(
     private fun requestOTP() {
         viewModelScope.launch(Dispatchers.IO) {
             requestResponse = TrueCallerApiClient().requestOtp(appContext, phoneNumber)
+
+            if ((requestResponse.getInt("status") == 1) || (requestResponse.getInt("status") == 9) || (requestResponse.getString("message") == "Sent")
+            ) {
+                isOtpSent = true
+            } else {
+                unexpectedError = true
+            }
         }
     }
 
