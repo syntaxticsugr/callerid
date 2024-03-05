@@ -58,55 +58,73 @@ fun VerifyScreen(
 
             Spacer(modifier = Modifier.height(0.05.dw))
 
-            if (verifyViewModel.isOtpSent) {
-                if (verifyViewModel.isVerifying) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            if (verifyViewModel.isAlreadyVerified) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = "Verification Successful :)"
+                )
 
-                    Spacer(modifier = Modifier.height(0.01.dw))
+                Spacer(modifier = Modifier.height(0.05.dw))
 
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        text = "Verifying OTP"
-                    )
-                } else {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        value = verifyViewModel.otp,
-                        onValueChange = { verifyViewModel.otp = it },
-                        label = { Text("OTP") },
-                        isError = verifyViewModel.otpError
-                    )
-
-                    Spacer(modifier = Modifier.height(0.10.dw))
-
-                    Button(
-                        onClick = {
-                            keyboardController?.hide()
-                            verifyViewModel.verifyOTP(navController)
-                        }
-                    ) {
-                        Text("Verify OTP")
+                Button(
+                    onClick = {
+                        verifyViewModel.nextScreen(navController)
                     }
+                ) {
+                    Text("Next")
                 }
             } else {
-                if (verifyViewModel.unexpectedError) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        text = verifyViewModel.getErrorMessage()
-                    )
+                if (verifyViewModel.isOtpSent) {
+                    if (verifyViewModel.isVerifying) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+
+                        Spacer(modifier = Modifier.height(0.01.dw))
+
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            text = "Verifying OTP"
+                        )
+                    } else {
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            value = verifyViewModel.otp,
+                            onValueChange = { verifyViewModel.otp = it },
+                            label = { Text("OTP") },
+                            isError = verifyViewModel.otpError
+                        )
+
+                        Spacer(modifier = Modifier.height(0.10.dw))
+
+                        Button(
+                            onClick = {
+                                keyboardController?.hide()
+                                verifyViewModel.verifyOTP(navController)
+                            }
+                        ) {
+                            Text("Verify OTP")
+                        }
+                    }
                 } else {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    if (verifyViewModel.unexpectedError) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            text = verifyViewModel.getErrorMessage()
+                        )
+                    } else {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
-                    Spacer(modifier = Modifier.height(0.01.dw))
+                        Spacer(modifier = Modifier.height(0.01.dw))
 
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        text = "Requesting OTP"
-                    )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            text = "Requesting OTP"
+                        )
+                    }
                 }
             }
         }

@@ -33,6 +33,7 @@ class VerifyViewModel(
     var isOtpSent by mutableStateOf(false)
     var unexpectedError by mutableStateOf(false)
     var isVerifying by mutableStateOf(false)
+    var isAlreadyVerified by mutableStateOf(false)
 
     var otp by mutableStateOf("")
     var otpError by mutableStateOf(false)
@@ -83,9 +84,16 @@ class VerifyViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             requestResponse = TCallerApiClient().requestOtp(appContext, phoneNumber)
 
-            if ((requestResponse.getInt("status") == 1) || (requestResponse.getInt("status") == 9) || (requestResponse.getString("message") == "Sent")
+            if ((requestResponse.getInt("status") == 1) || (requestResponse.getString("message") == "Sent")
             ) {
                 isOtpSent = true
+            } else if ((requestResponse.getInt("status") == 3) || (requestResponse.getString("message") == "Already verified")) {
+                AuthKeyManager.saveAuthKey(
+                    appContext,
+                    requestResponse.getString("installationId")
+                )
+
+                isAlreadyVerified = true
             } else {
                 unexpectedError = true
             }
