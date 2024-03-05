@@ -10,8 +10,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.navigation.Screens
-import com.syntaxticsugr.callerid.truecaller.TrueCallerApiClient
 import com.syntaxticsugr.callerid.utils.AuthKeyManager
+import com.syntaxticsugr.tcaller.TCallerApiClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -58,7 +58,7 @@ class VerifyViewModel(
                 isVerifying = true
 
                 val verifyResponse =
-                    TrueCallerApiClient().verifyOtp(
+                    TCallerApiClient().verifyOtp(
                         phoneNumber,
                         requestResponse.getString("requestId"),
                         otp
@@ -81,7 +81,7 @@ class VerifyViewModel(
 
     private fun requestOTP() {
         viewModelScope.launch(Dispatchers.IO) {
-            requestResponse = TrueCallerApiClient().requestOtp(appContext, phoneNumber)
+            requestResponse = TCallerApiClient().requestOtp(appContext, phoneNumber)
 
             if ((requestResponse.getInt("status") == 1) || (requestResponse.getInt("status") == 9) || (requestResponse.getString("message") == "Sent")
             ) {

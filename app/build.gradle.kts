@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -69,14 +68,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.googlecode.libphonenumber)
-    implementation(libs.io.ktor.client.content.negotiation)
-    implementation(libs.io.ktor.client.core)
-    implementation(libs.io.ktor.client.encoding)
-    implementation(libs.io.ktor.client.okhttp)
-    implementation(libs.io.ktor.kotlinx.serialization)
     implementation(libs.jetpack.compose.percentage.units)
     implementation(libs.koin.androidx.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(project(":tCaller"))
     testImplementation(libs.junit)
 
 }

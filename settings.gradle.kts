@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "callerid"
 include(":app")
+include(":tCaller")
