@@ -18,7 +18,7 @@ fun CallerCard(call: CallerModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 0.04.dw, vertical = 0.03.dw),
+            .padding(vertical = 0.03.dw),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ProfileAvatar(

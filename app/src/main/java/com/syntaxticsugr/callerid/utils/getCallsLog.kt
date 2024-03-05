@@ -7,8 +7,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-fun getCallsLog(context: Context): Map<String, List<CallerModel>> {
-    val callMap = mutableMapOf<String, MutableList<CallerModel>>()
+fun getCallsLog(context: Context): MutableMap<String, MutableMap<String, MutableMap<String, MutableList<CallerModel>>>> {
+    val callMap = mutableMapOf<String, MutableMap<String, MutableMap<String, MutableList<CallerModel>>>>()
 
     val cursor = context.contentResolver.query(
         CallLog.Calls.CONTENT_URI,
@@ -32,7 +32,7 @@ fun getCallsLog(context: Context): Map<String, List<CallerModel>> {
             val duration = c.getInt(durationIndex)
             val type = c.getInt(typeIndex)
 
-            val timeFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
+            val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
             val timeString = timeFormat.format(Date(date))
 
             val dateFormat = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
@@ -47,10 +47,24 @@ fun getCallsLog(context: Context): Map<String, List<CallerModel>> {
             )
 
             if (!callMap.containsKey(dateString)) {
-                callMap[dateString] = mutableListOf()
+                callMap[dateString] = mutableMapOf()
+                callMap[dateString]!!["known"] = mutableMapOf()
+                callMap[dateString]!!["unknown"] = mutableMapOf()
             }
 
-            callMap[dateString]!!.add(caller)
+            if (name.isNotBlank()) {
+                if (!callMap[dateString]!!["known"]!!.containsKey(number)) {
+                    callMap[dateString]!!["known"]!![number] = mutableListOf()
+                }
+
+                callMap[dateString]!!["known"]!![number]!!.add(caller)
+            } else {
+                if (!callMap[dateString]!!["unknown"]!!.containsKey(number)) {
+                    callMap[dateString]!!["unknown"]!![number] = mutableListOf()
+                }
+
+                callMap[dateString]!!["unknown"]!![number]!!.add(caller)
+            }
         }
     }
 

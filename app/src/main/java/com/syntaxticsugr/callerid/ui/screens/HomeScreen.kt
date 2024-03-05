@@ -52,11 +52,37 @@ fun HomeScreen(
             }
 
             val selectedDate = dates[selectedTabIndex]
-            val selectedCallList = callLogs[selectedDate]!!
+            val knownCallers = callLogs[selectedDate]!!["known"]!!
+            val unknownCallers = callLogs[selectedDate]!!["unknown"]!!
+            val knownCallersList = knownCallers.keys.toList()
+            val unknownCallersList = unknownCallers.keys.toList()
 
-            LazyColumn {
-                items(selectedCallList) { call ->
-                    CallerCard(call = call)
+            LazyColumn(
+                modifier = Modifier
+                    .padding(horizontal = 0.04.dw)
+            ) {
+                item {
+                    Text(
+                        text = "Unknown Callers",
+                        modifier = Modifier
+                            .padding(vertical = 0.04.dw),
+                    )
+                }
+
+                items(unknownCallersList) { phoneNumber ->
+                    CallerCard(call = unknownCallers[phoneNumber]!![0])
+                }
+
+                item {
+                    Text(
+                        text = "From Contacts",
+                        modifier = Modifier
+                            .padding(vertical = 0.04.dw),
+                    )
+                }
+
+                items(knownCallersList) { phoneNumber ->
+                    CallerCard(call = knownCallers[phoneNumber]!![0])
                 }
             }
         }
