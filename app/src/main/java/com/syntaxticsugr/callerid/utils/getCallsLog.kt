@@ -32,7 +32,7 @@ fun getCallsLog(context: Context): MutableMap<String, MutableMap<String, Mutable
             val duration = c.getInt(durationIndex)
             val type = c.getInt(typeIndex)
 
-            val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+            val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
             val timeString = timeFormat.format(Date(date))
 
             val dateFormat = SimpleDateFormat("d MMM yyyy", Locale.getDefault())

@@ -4,6 +4,6 @@ import android.provider.CallLog
 
 fun isOutgoingMissedCall(type: Int, duration: String): Boolean {
 
-    return type == CallLog.Calls.OUTGOING_TYPE && duration == "00 sec"
+    return type == CallLog.Calls.OUTGOING_TYPE && duration == "0 sec"
 
 }
