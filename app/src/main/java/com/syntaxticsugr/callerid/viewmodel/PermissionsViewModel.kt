@@ -10,8 +10,8 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.enums.PermissionsResult
 import com.syntaxticsugr.callerid.navigation.Screens
-import com.syntaxticsugr.callerid.utils.AuthKeyManager
 import com.syntaxticsugr.callerid.utils.PermissionsManager
+import com.syntaxticsugr.tcaller.utils.AuthKeyManager
 
 class PermissionsViewModel(
     application: Application

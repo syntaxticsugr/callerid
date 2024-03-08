@@ -58,7 +58,7 @@ fun VerifyScreen(
 
             Spacer(modifier = Modifier.height(0.05.dw))
 
-            if (verifyViewModel.isAlreadyVerified) {
+            if (verifyViewModel.isVerificationSuccessful) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -101,7 +101,7 @@ fun VerifyScreen(
                         Button(
                             onClick = {
                                 keyboardController?.hide()
-                                verifyViewModel.verifyOTP(navController)
+                                verifyViewModel.verifyOTP()
                             }
                         ) {
                             Text("Verify OTP")

@@ -1,6 +1,6 @@
 package com.syntaxticsugr.tcaller.utils
 
-fun isGMS(): Boolean {
+private fun isGMS(): Boolean {
     return try {
         Class.forName("com.google.android.gms.common.GoogleApiAvailability")
         true
@@ -9,7 +9,7 @@ fun isGMS(): Boolean {
     }
 }
 
-fun isHMS(): Boolean {
+private fun isHMS(): Boolean {
     return try {
         Class.forName("com.huawei.hms.api.HuaweiApiAvailability")
         true

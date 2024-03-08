@@ -10,11 +10,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.navigation.Screens
-import com.syntaxticsugr.callerid.utils.AuthKeyManager
-import com.syntaxticsugr.tcaller.TCallerApiClient
+import com.syntaxticsugr.tcaller.TcallerApiClient
+import com.syntaxticsugr.tcaller.enums.RequestResult
+import com.syntaxticsugr.tcaller.enums.VerifyResult
+import com.syntaxticsugr.tcaller.tCallerApiFeatures.requestOtp
+import com.syntaxticsugr.tcaller.tCallerApiFeatures.verifyOtp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class VerifyViewModel(
     application: Application,
@@ -28,18 +30,19 @@ class VerifyViewModel(
     lateinit var phoneNumber: String
     lateinit var email: String
 
-    private lateinit var requestResponse: JSONObject
+    var otp by mutableStateOf("")
+    var otpError by mutableStateOf(false)
+
+    private lateinit var requestId: String
+    private lateinit var errorMessage: String
 
     var isOtpSent by mutableStateOf(false)
     var unexpectedError by mutableStateOf(false)
     var isVerifying by mutableStateOf(false)
-    var isAlreadyVerified by mutableStateOf(false)
-
-    var otp by mutableStateOf("")
-    var otpError by mutableStateOf(false)
+    var isVerificationSuccessful by mutableStateOf(false)
 
     fun getErrorMessage(): String {
-        return "${requestResponse.getString("message")} :("
+        return errorMessage
     }
 
     fun nextScreen(navController: NavController) {
@@ -50,7 +53,7 @@ class VerifyViewModel(
         }
     }
 
-    fun verifyOTP(navController: NavController) {
+    fun verifyOTP() {
         viewModelScope.launch(Dispatchers.IO) {
             if (!otp.matches(Regex("^\\s*\\d{6}\\s*\$"))) {
                 otpError = true
@@ -59,22 +62,24 @@ class VerifyViewModel(
                 isVerifying = true
 
                 val verifyResponse =
-                    TCallerApiClient().verifyOtp(
-                        phoneNumber,
-                        requestResponse.getString("requestId"),
-                        otp
-                    )
+                    TcallerApiClient.verifyOtp(appContext, phoneNumber, requestId, otp)
 
-                if ((verifyResponse.getInt("status") != 11) && !verifyResponse.getBoolean("suspended")) {
-                    AuthKeyManager.saveAuthKey(
-                        appContext,
-                        verifyResponse.getString("installationId")
-                    )
-
-                    nextScreen(navController)
-                } else {
+                if (verifyResponse.keys.contains(VerifyResult.VERIFICATION_SUCCESSFUL)) {
+                    isVerificationSuccessful = true
+                } else if (verifyResponse.containsKey(VerifyResult.INVALID_OTP)) {
                     isVerifying = false
                     otpError = true
+                } else if (verifyResponse.containsKey(VerifyResult.RETRIES_LIMIT_EXCEEDED)) {
+                    errorMessage =
+                        "${verifyResponse[VerifyResult.RETRIES_LIMIT_EXCEEDED]!!.getString("message")} :("
+                    unexpectedError = true
+                } else if (verifyResponse.containsKey(VerifyResult.ACCOUNT_SUSPENDED)) {
+                    errorMessage =
+                        "${verifyResponse[VerifyResult.ACCOUNT_SUSPENDED]!!.getString("message")} :("
+                    unexpectedError = true
+                } else {
+                    errorMessage = "${verifyResponse[VerifyResult.ERROR]!!.getString("message")} :("
+                    unexpectedError = true
                 }
             }
         }
@@ -82,19 +87,15 @@ class VerifyViewModel(
 
     private fun requestOTP() {
         viewModelScope.launch(Dispatchers.IO) {
-            requestResponse = TCallerApiClient().requestOtp(appContext, phoneNumber)
+            val requestResponse = TcallerApiClient.requestOtp(appContext, phoneNumber)
 
-            if ((requestResponse.getInt("status") == 1) || (requestResponse.getString("message") == "Sent")
-            ) {
+            if (requestResponse.keys.contains(RequestResult.OTP_SENT)) {
+                requestId = requestResponse[RequestResult.OTP_SENT]!!.getString("requestId")
                 isOtpSent = true
-            } else if ((requestResponse.getInt("status") == 3) || (requestResponse.getString("message") == "Already verified")) {
-                AuthKeyManager.saveAuthKey(
-                    appContext,
-                    requestResponse.getString("installationId")
-                )
-
-                isAlreadyVerified = true
+            } else if (requestResponse.keys.contains(RequestResult.ALREADY_VERIFIED)) {
+                isVerificationSuccessful = true
             } else {
+                errorMessage = "${requestResponse[RequestResult.ERROR]!!.getString("message")} :("
                 unexpectedError = true
             }
         }

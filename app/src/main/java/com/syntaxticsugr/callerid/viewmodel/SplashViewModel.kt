@@ -8,8 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.enums.PermissionsResult
 import com.syntaxticsugr.callerid.navigation.Screens
-import com.syntaxticsugr.callerid.utils.AuthKeyManager
 import com.syntaxticsugr.callerid.utils.PermissionsManager
+import com.syntaxticsugr.tcaller.utils.AuthKeyManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
