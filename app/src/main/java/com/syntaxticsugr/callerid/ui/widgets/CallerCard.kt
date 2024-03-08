@@ -25,19 +25,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.datamodel.CallerModel
+import com.syntaxticsugr.callerid.navigation.Screens
 
 @Composable
-fun CallerCard(call: CallerModel) {
+fun CallerCard(call: CallerModel, navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(0.04.dw))
-            .clickable { expanded = !expanded }
+            .clickable {
+                if (call.callerName.isNotBlank()) {
+                    navController.navigate("${Screens.History.route}/${call.phoneNumber}")
+                } else {
+                    expanded = !expanded
+                }
+            }
     ) {
         Row(
             modifier = Modifier
@@ -83,7 +91,7 @@ fun CallerCard(call: CallerModel) {
         }
 
         AnimatedVisibility(
-            visible = (expanded && call.callerName.isBlank())
+            visible = expanded
         ) {
             Row(
                 modifier = Modifier
@@ -92,7 +100,9 @@ fun CallerCard(call: CallerModel) {
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 IconButton(
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        navController.navigate("${Screens.History.route}/${call.phoneNumber}")
+                    }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_history_24),

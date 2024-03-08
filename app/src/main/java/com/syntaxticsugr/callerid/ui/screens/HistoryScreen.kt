@@ -32,14 +32,15 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen(
+fun HistoryScreen(
+    phoneNumber: String,
     navController: NavController
 ) {
     val context = LocalContext.current
 
     val coroutineScope = rememberCoroutineScope()
 
-    val callLogs by remember { mutableStateOf(getCallsLog(context = context)) }
+    val callLogs by remember { mutableStateOf(getCallsLog(context, phoneNumber)) }
     val dates = callLogs.keys.toList()
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -82,41 +83,22 @@ fun HomeScreen(
                 verticalAlignment = Alignment.Top
             ) { page ->
                 val selectedDate = dates[page]
-                val knownCallers = callLogs[selectedDate]!!["known"]!!
-                val unknownCallers = callLogs[selectedDate]!!["unknown"]!!
-                val knownCallersList = knownCallers.keys.toList()
-                val unknownCallersList = unknownCallers.keys.toList()
+                val calls = callLogs[selectedDate]!!
 
                 LazyColumn(
                     modifier = Modifier
                         .padding(horizontal = 0.02.dw)
                 ) {
-                    if (unknownCallersList.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = "Unknown Callers",
-                                modifier = Modifier
-                                    .padding(horizontal = 0.02.dw, vertical = 0.04.dw),
-                            )
-                        }
-
-                        items(unknownCallersList) { phoneNumber ->
-                            CallerCard(call = unknownCallers[phoneNumber]!!, navController)
-                        }
+                    item {
+                        Text(
+                            text = phoneNumber,
+                            modifier = Modifier
+                                .padding(horizontal = 0.02.dw, vertical = 0.04.dw),
+                        )
                     }
 
-                    if (knownCallersList.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = "From Contacts",
-                                modifier = Modifier
-                                    .padding(horizontal = 0.02.dw, vertical = 0.04.dw),
-                            )
-                        }
-
-                        items(knownCallersList) { phoneNumber ->
-                            CallerCard(call = knownCallers[phoneNumber]!!, navController)
-                        }
+                    items(calls) { call ->
+                        CallerCard(call = call, navController)
                     }
                 }
             }
