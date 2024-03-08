@@ -4,7 +4,7 @@
     <style name="Theme.CallerID" parent="android:Theme.Material.NoActionBar" />
 
     <style name="Theme.CallerIDSplashTheme" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#0061A4</item>
+        <item name="windowSplashScreenBackground">#000000</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/splash_dark</item>
         <item name="postSplashScreenTheme">@style/Theme.CallerID</item>
     </style>
