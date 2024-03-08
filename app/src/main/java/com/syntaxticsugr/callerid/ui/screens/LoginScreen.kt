@@ -25,8 +25,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dh
 import com.slaviboy.composeunits.dw
-import com.syntaxticsugr.callerid.utils.getDeviceRegion
-import com.syntaxticsugr.callerid.utils.getDialingCode
 import com.syntaxticsugr.callerid.utils.rememberImeState
 import com.syntaxticsugr.callerid.viewmodel.LoginViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -77,7 +75,7 @@ fun LogInScreen(
                 value = loginViewModel.phoneNumber,
                 onValueChange = { loginViewModel.phoneNumber = it },
                 label = "Phone Number",
-                prefix = getDialingCode(getDeviceRegion()),
+                prefix = "+",
                 leadingIcon = Icons.Filled.Phone,
                 isError = loginViewModel.phoneNumberError,
                 keyboardType = KeyboardType.Number

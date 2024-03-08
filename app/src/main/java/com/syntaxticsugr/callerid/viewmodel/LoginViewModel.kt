@@ -24,21 +24,21 @@ class LoginViewModel(
     var lastName by mutableStateOf("")
     var lastNameError by mutableStateOf(false)
 
-    var phoneNumber by mutableStateOf("")
+    var phoneNumber by mutableStateOf(getDialingCode(getDeviceRegion()))
     var phoneNumberError by mutableStateOf(false)
 
     var email by mutableStateOf("")
     var emailError by mutableStateOf(false)
 
-    private fun phoneNumberWithDialingCode(): String {
-        return "${getDialingCode(getDeviceRegion())}${phoneNumber.trim()}"
+    private fun internationalFormatPhoneNumber(): String {
+        return "+${phoneNumber.trim()}"
     }
 
     private fun saveUserCreds() {
         viewModelScope.launch(Dispatchers.IO) {
             pref.writeString(key = "firstName", value = firstName.trim())
             pref.writeString(key = "lastName", value = lastName.trim())
-            pref.writeString(key = "phoneNumber", value = phoneNumberWithDialingCode())
+            pref.writeString(key = "phoneNumber", value = internationalFormatPhoneNumber())
             pref.writeString(key = "email", value = email.trim())
         }
     }
@@ -60,7 +60,7 @@ class LoginViewModel(
             isValid = false
         }
         if (!phoneNumber.matches(Regex("^\\s*\\d{2,}\\s*$")) || !isValidPhoneNumber(
-                phoneNumberWithDialingCode()
+                internationalFormatPhoneNumber()
             )
         ) {
             phoneNumberError = true
