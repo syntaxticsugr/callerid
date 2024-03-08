@@ -90,7 +90,7 @@ fun LogInScreen(
                 keyboardType = KeyboardType.Email
             )
 
-            Spacer(modifier = Modifier.height(0.05.dw))
+            Spacer(modifier = Modifier.height(0.10.dw))
 
             Button(
                 onClick = {

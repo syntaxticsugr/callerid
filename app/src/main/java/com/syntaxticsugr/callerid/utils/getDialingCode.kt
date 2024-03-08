@@ -6,5 +6,5 @@ fun getDialingCode(countryCode: String): String {
     val phoneNumberUtil = PhoneNumberUtil.getInstance()
     val regionCode = phoneNumberUtil.getCountryCodeForRegion(countryCode)
 
-    return "+$regionCode"
+    return regionCode.toString()
 }
