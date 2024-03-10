@@ -25,19 +25,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.datamodel.CallerModel
 import com.syntaxticsugr.callerid.navigation.Screens
+import com.syntaxticsugr.callerid.utils.callTypeString
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
-fun CallerCard(call: CallerModel, navController: NavController) {
+fun CallerCard(
+    call: CallerModel,
+    navController: NavController
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(vertical = 0.02.dw)
             .clip(RoundedCornerShape(0.04.dw))
             .clickable {
                 if (call.callerName.isNotBlank()) {
@@ -49,7 +56,7 @@ fun CallerCard(call: CallerModel, navController: NavController) {
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 0.02.dw, vertical = 0.03.dw),
+                .padding(0.02.dw),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ProfileAvatar(
@@ -71,17 +78,15 @@ fun CallerCard(call: CallerModel, navController: NavController) {
                 }
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     CallTypeIcon(type = call.type, duration = call.duration, size = 0.04.dw)
 
-                    Spacer(modifier = Modifier.width(0.02.dw))
+                    Spacer(modifier = Modifier.width(0.04.dw))
 
                     Text(text = call.time)
 
-                    Spacer(modifier = Modifier.width(0.02.dw))
+                    Spacer(modifier = Modifier.width(0.04.dw))
 
                     if (call.duration != "0 sec") {
                         Text(text = call.duration)
@@ -96,7 +101,7 @@ fun CallerCard(call: CallerModel, navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 0.03.dw),
+                    .padding(top = 0.02.dw),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 IconButton(
@@ -135,4 +140,44 @@ fun CallerCard(call: CallerModel, navController: NavController) {
             }
         }
     }
+}
+
+@Composable
+fun CallerCard(
+    call: CallerModel
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 0.04.dw),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CallTypeIcon(type = call.type, duration = call.duration, size = 0.06.dw)
+
+        Spacer(modifier = Modifier.width(0.04.dw))
+
+        Column {
+            Text(text = callTypeString(call.type))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = call.date)
+
+                Spacer(modifier = Modifier.width(0.02.dw))
+
+                Text(text = call.time)
+            }
+        }
+
+        if (call.duration != "0 sec") {
+            Text(
+                text = call.duration,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.End
+            )
+        }
+    }
+
 }

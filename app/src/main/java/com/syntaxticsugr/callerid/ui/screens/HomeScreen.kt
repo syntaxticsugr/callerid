@@ -89,14 +89,14 @@ fun HomeScreen(
 
                 LazyColumn(
                     modifier = Modifier
-                        .padding(horizontal = 0.02.dw)
+                        .padding(horizontal = 0.04.dw)
                 ) {
                     if (unknownCallersList.isNotEmpty()) {
                         item {
                             Text(
                                 text = "Unknown Callers",
                                 modifier = Modifier
-                                    .padding(horizontal = 0.02.dw, vertical = 0.04.dw),
+                                    .padding(vertical = 0.04.dw),
                             )
                         }
 
@@ -110,7 +110,7 @@ fun HomeScreen(
                             Text(
                                 text = "From Contacts",
                                 modifier = Modifier
-                                    .padding(horizontal = 0.02.dw, vertical = 0.04.dw),
+                                    .padding(vertical = 0.04.dw),
                             )
                         }
 

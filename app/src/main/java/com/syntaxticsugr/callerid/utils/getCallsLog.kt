@@ -56,9 +56,10 @@ fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallerMod
             val caller = CallerModel(
                 callerName = name,
                 phoneNumber = number,
+                date = dateString,
                 time = timeString,
-                duration = formatDuration(duration),
-                type = type
+                type = type,
+                duration = formatDuration(duration)
             )
 
             if (!callMap.containsKey(dateString)) {
@@ -83,11 +84,9 @@ fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallerMod
 }
 
 
-fun getCallsLog(context: Context, phoneNumber: String): Map<String, List<CallerModel>> {
-    //    "date1" = [CallerModel, CallerModel, ...]
-    //    "date2" = [...],
-    //    ...
-    val callMap = mutableMapOf<String, MutableList<CallerModel>>()
+fun getCallsLog(context: Context, phoneNumber: String): List<CallerModel> {
+    //    [CallerModel, CallerModel, ...]
+    val callMap = mutableListOf<CallerModel>()
 
     val cursor = context.contentResolver.query(
         CallLog.Calls.CONTENT_URI,
@@ -120,17 +119,14 @@ fun getCallsLog(context: Context, phoneNumber: String): Map<String, List<CallerM
             val caller = CallerModel(
                 callerName = name,
                 phoneNumber = number,
+                date = dateString,
                 time = timeString,
-                duration = formatDuration(duration),
-                type = type
+                type = type,
+                duration = formatDuration(duration)
             )
 
             if (caller.phoneNumber == phoneNumber) {
-                if (!callMap.containsKey(dateString)) {
-                    callMap[dateString] = mutableListOf()
-                }
-
-                callMap[dateString]!!.add(caller)
+                callMap.add(caller)
             }
         }
     }

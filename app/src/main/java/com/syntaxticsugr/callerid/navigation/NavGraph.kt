@@ -51,7 +51,7 @@ fun SetupNavGraph(
             arguments = listOf(navArgument("phoneNumber") { type = NavType.StringType })
         ) { navBackStackEntry ->
             val phoneNumber = navBackStackEntry.arguments?.getString("phoneNumber")!!
-            HistoryScreen(navController = navController, phoneNumber = phoneNumber)
+            HistoryScreen(phoneNumber = phoneNumber)
         }
 
     }
