@@ -11,7 +11,8 @@ import com.syntaxticsugr.callerid.enums.PermissionsResult
 object PermissionsManager {
 
     val requiredPermissions = arrayOf(
-        Manifest.permission.READ_CALL_LOG
+        Manifest.permission.READ_CALL_LOG,
+        Manifest.permission.CALL_PHONE
     )
 
     fun arePermissionsGranted(context: Context): PermissionsResult {

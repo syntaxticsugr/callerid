@@ -1,5 +1,6 @@
 package com.syntaxticsugr.callerid.ui.widgets
 
+import android.content.Context
 import android.provider.CallLog
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -25,17 +26,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.datamodel.CallerModel
 import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.utils.callTypeString
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import com.syntaxticsugr.callerid.utils.makePhoneCall
+import com.syntaxticsugr.callerid.utils.savePhoneNumber
+import com.syntaxticsugr.callerid.utils.sendMessage
+
 
 @Composable
 fun CallerCard(
+    context: Context,
     call: CallerModel,
     navController: NavController
 ) {
@@ -68,13 +72,9 @@ fun CallerCard(
 
             Column {
                 if (call.callerName.isBlank()) {
-                    Text(
-                        text = call.phoneNumber
-                    )
+                    Text(text = call.phoneNumber)
                 } else {
-                    Text(
-                        text = call.callerName
-                    )
+                    Text(text = call.callerName)
                 }
 
                 Row(
@@ -93,6 +93,19 @@ fun CallerCard(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = {
+                    makePhoneCall(context, call.phoneNumber)
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_call_24),
+                    contentDescription = null
+                )
+            }
         }
 
         AnimatedVisibility(
@@ -106,20 +119,11 @@ fun CallerCard(
             ) {
                 IconButton(
                     onClick = {
-                        navController.navigate("${Screens.History.route}/${call.phoneNumber}")
+                        sendMessage(context, call.phoneNumber)
                     }
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.baseline_history_24),
-                        contentDescription = null
-                    )
-                }
-
-                IconButton(
-                    onClick = { /*TODO*/ }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_block_24),
+                        painter = painterResource(id = R.drawable.baseline_message_24),
                         tint = if (call.type == CallLog.Calls.BLOCKED_TYPE) {
                             MaterialTheme.colorScheme.error
                         } else {
@@ -130,7 +134,20 @@ fun CallerCard(
                 }
 
                 IconButton(
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        navController.navigate("${Screens.History.route}/${call.phoneNumber}")
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_history_24),
+                        contentDescription = null
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        savePhoneNumber(context, call.phoneNumber)
+                    }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_person_add_alt_1_24),
@@ -171,12 +188,9 @@ fun CallerCard(
         }
 
         if (call.duration != "0 sec") {
-            Text(
-                text = call.duration,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textAlign = TextAlign.End
-            )
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text(text = call.duration)
         }
     }
 

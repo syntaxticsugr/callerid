@@ -101,7 +101,11 @@ fun HomeScreen(
                         }
 
                         items(unknownCallersList) { phoneNumber ->
-                            CallerCard(call = unknownCallers[phoneNumber]!!, navController)
+                            CallerCard(
+                                context = context,
+                                call = unknownCallers[phoneNumber]!!,
+                                navController
+                            )
                         }
                     }
 
@@ -115,7 +119,11 @@ fun HomeScreen(
                         }
 
                         items(knownCallersList) { phoneNumber ->
-                            CallerCard(call = knownCallers[phoneNumber]!!, navController)
+                            CallerCard(
+                                context = context,
+                                call = knownCallers[phoneNumber]!!,
+                                navController
+                            )
                         }
                     }
                 }

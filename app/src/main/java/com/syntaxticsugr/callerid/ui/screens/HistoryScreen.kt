@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -28,6 +27,7 @@ import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.ui.widgets.CallerCard
 import com.syntaxticsugr.callerid.ui.widgets.ProfileAvatar
 import com.syntaxticsugr.callerid.utils.getCallsLog
+import com.syntaxticsugr.callerid.utils.makePhoneCall
 
 @Composable
 fun HistoryScreen(
@@ -39,7 +39,11 @@ fun HistoryScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ }) {
+            FloatingActionButton(
+                onClick = {
+                    makePhoneCall(context, phoneNumber)
+                }
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_call_24),
                     modifier = Modifier.size(0.08.dw),

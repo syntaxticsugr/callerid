@@ -72,7 +72,7 @@ fun PermissionsScreen(
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text = "CallerID needs the following permissions to work.\n\nREAD_CALL_LOGS\nTo display call logs within the App.",
+                text = "CallerID needs the following permissions to work.\n\nREAD_CALL_LOGS\nTo display call logs within the App.\n\nCALL_PHONE\nTo make calls from within the App.",
                 textAlign = TextAlign.Start
             )
 
