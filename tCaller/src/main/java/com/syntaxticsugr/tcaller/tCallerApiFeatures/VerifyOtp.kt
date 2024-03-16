@@ -9,7 +9,6 @@ import com.syntaxticsugr.tcaller.utils.stringToJson
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.request.url
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
@@ -22,11 +21,11 @@ suspend fun TcallerApiClient.verifyOtp(
 ): Map<VerifyResult, JSONObject> {
     val postBodyVerifyOtp = postBodyVerifyOtp(phoneNumber, requestId, token)
 
-    val response = httpClient.post {
-        tCallerClient()
-        url("https://account-asia-south1.truecaller.com/v1/verifyOnboardingOtp")
-        setBody(Json.encodeToString(postBodyVerifyOtp))
-    }
+    val response =
+        httpClient.post("https://account-asia-south1.truecaller.com/v1/verifyOnboardingOtp") {
+            tCallerClient()
+            setBody(Json.encodeToString(postBodyVerifyOtp))
+        }
 
     val responseJson = stringToJson(response.body<String>())
 

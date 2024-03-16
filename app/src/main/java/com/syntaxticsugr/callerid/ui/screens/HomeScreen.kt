@@ -36,14 +36,12 @@ fun HomeScreen(
     navController: NavController
 ) {
     val context = LocalContext.current
-
     val coroutineScope = rememberCoroutineScope()
 
-    val callLogs by remember { mutableStateOf(getCallsLog(context = context)) }
-    val dates = callLogs.keys.toList()
+    val callsLog by remember { mutableStateOf(getCallsLog(context = context)) }
+    val dates = callsLog.keys.toList()
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-
     val pagerState = rememberPagerState(pageCount = { dates.size })
 
     LaunchedEffect(pagerState) {
@@ -82,8 +80,8 @@ fun HomeScreen(
                 verticalAlignment = Alignment.Top
             ) { page ->
                 val selectedDate = dates[page]
-                val knownCallers = callLogs[selectedDate]!!["known"]!!
-                val unknownCallers = callLogs[selectedDate]!!["unknown"]!!
+                val knownCallers = callsLog[selectedDate]!!["known"]!!
+                val unknownCallers = callsLog[selectedDate]!!["unknown"]!!
                 val knownCallersList = knownCallers.keys.toList()
                 val unknownCallersList = unknownCallers.keys.toList()
 

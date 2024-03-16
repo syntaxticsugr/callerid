@@ -7,9 +7,12 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.headers
+import io.ktor.client.request.accept
+import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.userAgent
+import io.ktor.http.withCharset
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -22,16 +25,10 @@ object TcallerApiClient {
         minorVersion = 56
     )
 
-    private const val CLIENTSECRET = "lvc22mp3l1sfv6ujg83rd17btt"
-
     private val majorVersion = tCallerAppVersion.majorVersion
     private val minorVersion = tCallerAppVersion.minorVersion
     private val buildVersion = tCallerAppVersion.buildVersion
     private val androidVersion = getAndroidVersion()
-
-    private val userAgent =
-        "Truecaller/${majorVersion}.${minorVersion}.${buildVersion} (Android;${androidVersion})"
-
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun createClient() = HttpClient(OkHttp) {
@@ -50,13 +47,15 @@ object TcallerApiClient {
         }
     }
 
+    private const val CLIENTSECRET = "lvc22mp3l1sfv6ujg83rd17btt"
+    private val userAgent =
+        "Truecaller/${majorVersion}.${minorVersion}.${buildVersion} (Android;${androidVersion})"
+
     fun HttpRequestBuilder.tCallerClient() {
-        contentType(ContentType.Application.Json)
-        headers {
-            append("accept-encoding", "gzip")
-            append("user-agent", userAgent)
-            append("clientsecret", CLIENTSECRET)
-        }
+        contentType(ContentType.Application.Json.withCharset(Charsets.UTF_8))
+        accept(ContentType.Application.GZip)
+        userAgent(userAgent)
+        header("clientsecret", CLIENTSECRET)
     }
 
     var httpClient = createClient()

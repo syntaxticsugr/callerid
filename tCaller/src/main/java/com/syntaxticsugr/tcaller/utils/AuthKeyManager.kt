@@ -19,8 +19,7 @@ object AuthKeyManager {
         val authFile = File(context.filesDir, AUTH_KEY_FILE_NAME)
 
         val installationId = response.getString("installationId")
-        val phoneNumber = response.getString("parsedPhoneNumber")
 
-        authFile.writeText("${installationId},+${phoneNumber}")
+        authFile.writeText(installationId)
     }
 }

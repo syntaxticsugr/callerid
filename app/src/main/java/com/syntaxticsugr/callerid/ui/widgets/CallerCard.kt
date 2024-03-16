@@ -51,10 +51,10 @@ fun CallerCard(
             .padding(vertical = 0.02.dw)
             .clip(RoundedCornerShape(0.04.dw))
             .clickable {
-                if (call.callerName.isNotBlank()) {
-                    navController.navigate("${Screens.History.route}/${call.phoneNumber}")
-                } else {
+                if (call.callerName.isBlank()) {
                     expanded = !expanded
+                } else {
+                    navController.navigate("${Screens.History.route}/${call.phoneNumber}")
                 }
             }
     ) {
@@ -86,9 +86,9 @@ fun CallerCard(
 
                     Text(text = call.time)
 
-                    Spacer(modifier = Modifier.width(0.04.dw))
-
                     if (call.duration != "0 sec") {
+                        Spacer(modifier = Modifier.width(0.04.dw))
+
                         Text(text = call.duration)
                     }
                 }
@@ -108,51 +108,53 @@ fun CallerCard(
             }
         }
 
-        AnimatedVisibility(
-            visible = expanded
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 0.02.dw),
-                horizontalArrangement = Arrangement.SpaceAround
+        if (call.callerName.isBlank()) {
+            AnimatedVisibility(
+                visible = expanded
             ) {
-                IconButton(
-                    onClick = {
-                        sendMessage(context, call.phoneNumber)
-                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 0.02.dw),
+                    horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_message_24),
-                        tint = if (call.type == CallLog.Calls.BLOCKED_TYPE) {
-                            MaterialTheme.colorScheme.error
-                        } else {
-                            LocalContentColor.current
-                        },
-                        contentDescription = null
-                    )
-                }
+                    IconButton(
+                        onClick = {
+                            sendMessage(context, call.phoneNumber)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_message_24),
+                            tint = if (call.type == CallLog.Calls.BLOCKED_TYPE) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                LocalContentColor.current
+                            },
+                            contentDescription = null
+                        )
+                    }
 
-                IconButton(
-                    onClick = {
-                        navController.navigate("${Screens.History.route}/${call.phoneNumber}")
+                    IconButton(
+                        onClick = {
+                            navController.navigate("${Screens.History.route}/${call.phoneNumber}")
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_history_24),
+                            contentDescription = null
+                        )
                     }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_history_24),
-                        contentDescription = null
-                    )
-                }
 
-                IconButton(
-                    onClick = {
-                        savePhoneNumber(context, call.phoneNumber)
+                    IconButton(
+                        onClick = {
+                            savePhoneNumber(context, call.phoneNumber)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_person_add_alt_1_24),
+                            contentDescription = null
+                        )
                     }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_person_add_alt_1_24),
-                        contentDescription = null
-                    )
                 }
             }
         }
@@ -193,5 +195,4 @@ fun CallerCard(
             Text(text = call.duration)
         }
     }
-
 }

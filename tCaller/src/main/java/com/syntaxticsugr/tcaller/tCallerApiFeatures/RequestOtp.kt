@@ -9,7 +9,6 @@ import com.syntaxticsugr.tcaller.utils.stringToJson
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.request.url
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
@@ -20,11 +19,11 @@ suspend fun TcallerApiClient.requestOtp(
 ): Map<RequestResult, JSONObject> {
     val postBodyRequestOtp = postBodyRequestOtp(context, phoneNumber, tCallerAppVersion)
 
-    val response = httpClient.post {
-        tCallerClient()
-        url("https://account-asia-south1.truecaller.com/v3/sendOnboardingOtp")
-        setBody(Json.encodeToString(postBodyRequestOtp))
-    }
+    val response =
+        httpClient.post("https://account-asia-south1.truecaller.com/v3/sendOnboardingOtp") {
+            tCallerClient()
+            setBody(Json.encodeToString(postBodyRequestOtp))
+        }
 
     val responseJson = stringToJson(response.body<String>())
 

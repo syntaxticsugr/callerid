@@ -3,6 +3,7 @@ package com.syntaxticsugr.callerid.utils
 import android.content.Context
 import android.provider.CallLog
 import com.syntaxticsugr.callerid.datamodel.CallerModel
+import com.syntaxticsugr.callerid.enums.CallerType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

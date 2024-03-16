@@ -32,21 +32,20 @@ class PermissionsViewModel(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             Uri.fromParts("package", activity.packageName, null)
         )
+
         activity.startActivity(intent)
     }
 
     fun nextScreen(navController: NavController) {
-        if (AuthKeyManager.getAuthKey(appContext) != null) {
-            navController.navigate(Screens.Home.route) {
-                popUpTo(Screens.Permissions.route) {
-                    inclusive = true
-                }
-            }
+        val destination = if (AuthKeyManager.getAuthKey(appContext) != null) {
+            Screens.Home.route
         } else {
-            navController.navigate(Screens.LogIn.route) {
-                popUpTo(Screens.Permissions.route) {
-                    inclusive = true
-                }
+            Screens.LogIn.route
+        }
+
+        navController.navigate(destination) {
+            popUpTo(Screens.Permissions.route) {
+                inclusive = true
             }
         }
     }

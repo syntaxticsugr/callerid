@@ -33,7 +33,9 @@ fun CallTypeIcon(
         else -> R.drawable.baseline_bug_report_24
     }
 
-    val tint = if (type == CallLog.Calls.MISSED_TYPE || type == CallLog.Calls.REJECTED_TYPE ||
+    val tint = if (
+        type == CallLog.Calls.MISSED_TYPE ||
+        type == CallLog.Calls.REJECTED_TYPE ||
         isOutgoingMissedCall(type, duration)
     ) {
         MaterialTheme.colorScheme.error
@@ -47,5 +49,4 @@ fun CallTypeIcon(
         tint = tint,
         contentDescription = null
     )
-
 }
