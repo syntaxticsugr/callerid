@@ -40,7 +40,7 @@ fun CallTypeIcon(
     ) {
         MaterialTheme.colorScheme.error
     } else {
-        LocalContentColor.current
+        MaterialTheme.colorScheme.primary
     }
 
     Icon(

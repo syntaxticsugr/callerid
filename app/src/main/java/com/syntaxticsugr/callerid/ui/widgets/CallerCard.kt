@@ -1,7 +1,6 @@
 package com.syntaxticsugr.callerid.ui.widgets
 
 import android.content.Context
-import android.provider.CallLog
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -114,6 +112,7 @@ fun CallerCard(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_call_24),
+                    tint = MaterialTheme.colorScheme.primary,
                     contentDescription = null
                 )
             }
@@ -136,11 +135,7 @@ fun CallerCard(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_message_24),
-                            tint = if (call.type == CallLog.Calls.BLOCKED_TYPE) {
-                                MaterialTheme.colorScheme.error
-                            } else {
-                                LocalContentColor.current
-                            },
+                            tint = MaterialTheme.colorScheme.primary,
                             contentDescription = null
                         )
                     }
@@ -152,6 +147,7 @@ fun CallerCard(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_history_24),
+                            tint = MaterialTheme.colorScheme.primary,
                             contentDescription = null
                         )
                     }
@@ -163,6 +159,7 @@ fun CallerCard(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_person_add_alt_1_24),
+                            tint = MaterialTheme.colorScheme.primary,
                             contentDescription = null
                         )
                     }

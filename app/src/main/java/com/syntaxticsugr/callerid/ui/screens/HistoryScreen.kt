@@ -14,9 +14,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,6 +29,7 @@ import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.ui.widgets.CallerCard
 import com.syntaxticsugr.callerid.ui.widgets.ProfileAvatar
 import com.syntaxticsugr.callerid.utils.getCallsLog
+import com.syntaxticsugr.callerid.utils.getName
 import com.syntaxticsugr.callerid.utils.makePhoneCall
 
 @Composable
@@ -36,6 +39,14 @@ fun HistoryScreen(
     val context = LocalContext.current
 
     val calls by remember { mutableStateOf(getCallsLog(context, phoneNumber)) }
+
+    var name by remember { mutableStateOf(calls[0].name) }
+
+    if (name.isBlank()) {
+        LaunchedEffect(Unit) {
+            name = getName(context, calls[0].phoneNumber)
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -64,13 +75,13 @@ fun HistoryScreen(
                     .padding(horizontal = 0.02.dw, vertical = 0.06.dw),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileAvatar(name = calls[0].name, size = 0.14.dw)
+                ProfileAvatar(name = name, size = 0.14.dw)
 
                 Spacer(modifier = Modifier.width(0.06.dw))
 
                 Column {
                     Text(
-                        text = calls[0].name,
+                        text = name,
                         fontSize = 0.06.sw
                     )
                     Text(

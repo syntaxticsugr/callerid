@@ -1,6 +1,7 @@
 package com.syntaxticsugr.callerid.di
 
 import com.syntaxticsugr.callerid.datastore.DataStorePref
+import com.syntaxticsugr.callerid.viewmodel.HomeViewModel
 import com.syntaxticsugr.callerid.viewmodel.LoginViewModel
 import com.syntaxticsugr.callerid.viewmodel.PermissionsViewModel
 import com.syntaxticsugr.callerid.viewmodel.SplashViewModel
@@ -35,6 +36,10 @@ val calleridModule = module {
 
     viewModel<VerifyViewModel> {
         VerifyViewModel(androidApplication(), get())
+    }
+
+    viewModel<HomeViewModel> {
+        HomeViewModel(androidApplication())
     }
 
 }

@@ -1,13 +1,19 @@
 package com.syntaxticsugr.callerid.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -24,16 +30,22 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.slaviboy.composeunits.dw
+import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.ui.widgets.CallerCard
+import com.syntaxticsugr.callerid.ui.widgets.SearchBar
 import com.syntaxticsugr.callerid.utils.getCallsLog
+import com.syntaxticsugr.callerid.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    homeViewModel: HomeViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -56,6 +68,28 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(0.04.dw),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SearchBar(context)
+
+                IconButton(
+                    onClick = {
+                        homeViewModel.openSettings(navController)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_more_vert_24),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = null
+                    )
+                }
+            }
+
             ScrollableTabRow(
                 selectedTabIndex = selectedTabIndex,
                 edgePadding = 0.dw
@@ -94,15 +128,15 @@ fun HomeScreen(
                             Text(
                                 text = "Unknown Callers",
                                 modifier = Modifier
-                                    .padding(vertical = 0.04.dw),
+                                    .padding(top = 0.04.dw),
                             )
                         }
 
                         items(unknownCallersList) { phoneNumber ->
                             CallerCard(
                                 context = context,
-                                navController = navController,
-                                call = unknownCallers[phoneNumber]!!
+                                navController,
+                                unknownCallers[phoneNumber]!!
                             )
                         }
                     }
@@ -112,15 +146,15 @@ fun HomeScreen(
                             Text(
                                 text = "From Contacts",
                                 modifier = Modifier
-                                    .padding(vertical = 0.04.dw),
+                                    .padding(top = 0.04.dw),
                             )
                         }
 
                         items(knownCallersList) { phoneNumber ->
                             CallerCard(
                                 context = context,
-                                navController = navController,
-                                call = knownCallers[phoneNumber]!!
+                                navController,
+                                knownCallers[phoneNumber]!!
                             )
                         }
                     }
