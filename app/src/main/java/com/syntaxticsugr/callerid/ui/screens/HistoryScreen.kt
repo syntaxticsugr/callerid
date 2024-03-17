@@ -42,7 +42,7 @@ fun HistoryScreen(
 
     var name by remember { mutableStateOf(calls[0].name) }
 
-    if (name.isBlank()) {
+    if (name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
             name = getName(context, calls[0].phoneNumber)
         }
@@ -80,10 +80,12 @@ fun HistoryScreen(
                 Spacer(modifier = Modifier.width(0.06.dw))
 
                 Column {
-                    Text(
-                        text = name,
-                        fontSize = 0.06.sw
-                    )
+                    if (name != null) {
+                        Text(
+                            text = name!!,
+                            fontSize = 0.06.sw
+                        )
+                    }
                     Text(
                         text = calls[0].phoneNumber,
                         fontSize = 0.05.sw

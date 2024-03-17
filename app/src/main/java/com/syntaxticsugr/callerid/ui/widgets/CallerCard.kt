@@ -47,7 +47,7 @@ fun CallerCard(
 
     var name by remember { mutableStateOf(call.name) }
 
-    if (name.isBlank()) {
+    if (name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
             name = getName(context, call.phoneNumber)
         }
@@ -59,7 +59,7 @@ fun CallerCard(
             .padding(vertical = 0.02.dw)
             .clip(RoundedCornerShape(0.04.dw))
             .clickable {
-                if (call.name.isBlank()) {
+                if (call.name.isNullOrBlank()) {
                     expanded = !expanded
                 } else {
                     navController.navigate("${Screens.History.route}/${call.phoneNumber}")
@@ -79,8 +79,10 @@ fun CallerCard(
             Spacer(modifier = Modifier.width(0.04.dw))
 
             Column {
-                if (call.name.isBlank()) {
-                    Text(text = name)
+                if (call.name.isNullOrBlank()) {
+                    if (name != null) {
+                        Text(text = name!!)
+                    }
                     Text(text = call.phoneNumber)
                 } else {
                     Text(text = call.name)
@@ -118,7 +120,7 @@ fun CallerCard(
             }
         }
 
-        if (call.name.isBlank()) {
+        if (call.name.isNullOrBlank()) {
             AnimatedVisibility(
                 visible = expanded
             ) {

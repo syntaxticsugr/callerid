@@ -14,11 +14,11 @@ import androidx.compose.ui.unit.Dp
 
 @Composable
 fun ProfileAvatar(
-    name: String,
+    name: String?,
     size: Dp
 ) {
 
-    val initial = if (name.isBlank()) "?" else name.take(1).uppercase()
+    val initial = if (name.isNullOrBlank()) "?" else name.take(1).uppercase()
 
     Box(
         modifier = Modifier
@@ -32,7 +32,7 @@ fun ProfileAvatar(
             )
         )
 
-        if (name.isBlank()) {
+        if (name.isNullOrBlank()) {
             CircularProgressIndicator(
                 modifier = Modifier
                     .fillMaxSize(),

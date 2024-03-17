@@ -79,10 +79,10 @@ fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallModel
                 callMap[dateString]!!["unknown"] = mutableMapOf()
             }
 
-            val callerType = if (name.isNotBlank()) {
-                "known"
-            } else {
+            val callerType = if (name.isNullOrBlank()) {
                 "unknown"
+            } else {
+                "known"
             }
 
             if (!callMap[dateString]!![callerType]!!.containsKey(number)) {
