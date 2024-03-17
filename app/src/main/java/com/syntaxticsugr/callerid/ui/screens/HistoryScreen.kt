@@ -64,13 +64,13 @@ fun HistoryScreen(
                     .padding(horizontal = 0.02.dw, vertical = 0.06.dw),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileAvatar(name = calls[0].callerName, size = 0.14.dw)
+                ProfileAvatar(name = calls[0].name, size = 0.14.dw)
 
                 Spacer(modifier = Modifier.width(0.06.dw))
 
                 Column {
                     Text(
-                        text = calls[0].callerName,
+                        text = calls[0].name,
                         fontSize = 0.06.sw
                     )
                     Text(

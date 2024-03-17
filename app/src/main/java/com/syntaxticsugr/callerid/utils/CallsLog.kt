@@ -2,13 +2,17 @@ package com.syntaxticsugr.callerid.utils
 
 import android.content.Context
 import android.provider.CallLog
-import com.syntaxticsugr.callerid.datamodel.CallerModel
+import com.syntaxticsugr.callerid.datamodel.CallModel
+import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.enums.CallerType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallerModel>>> {
+fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallModel>>> {
     //    "date1" = {
     //        "known" = {
     //            "phoneNumber1" = CallerModel,
@@ -23,39 +27,45 @@ fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallerMod
     //        ...
     //    },
     //    ...
-    val callMap =
-        mutableMapOf<String, MutableMap<String, MutableMap<String, CallerModel>>>()
+    val callMap = mutableMapOf<String, MutableMap<String, MutableMap<String, CallModel>>>()
 
-    val cursor = context.contentResolver.query(
+    context.contentResolver.query(
         CallLog.Calls.CONTENT_URI,
         null,
         null,
         null,
         CallLog.Calls.DATE + " DESC"
-    )
+    )?.use { cursor ->
+        val nameIndex = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)
+        val numberIndex = cursor.getColumnIndex(CallLog.Calls.NUMBER)
+        val dateIndex = cursor.getColumnIndex(CallLog.Calls.DATE)
+        val typeIndex = cursor.getColumnIndex(CallLog.Calls.TYPE)
+        val durationIndex = cursor.getColumnIndex(CallLog.Calls.DURATION)
 
-    cursor?.use { c ->
-        val nameIndex = c.getColumnIndex(CallLog.Calls.CACHED_NAME)
-        val numberIndex = c.getColumnIndex(CallLog.Calls.NUMBER)
-        val dateIndex = c.getColumnIndex(CallLog.Calls.DATE)
-        val typeIndex = c.getColumnIndex(CallLog.Calls.TYPE)
-        val durationIndex = c.getColumnIndex(CallLog.Calls.DURATION)
+        while (cursor.moveToNext()) {
+            val name = cursor.getString(nameIndex)
+            var number = cursor.getString(numberIndex)
+            val date = cursor.getLong(dateIndex)
+            val type = cursor.getInt(typeIndex)
+            val duration = cursor.getInt(durationIndex)
 
-        while (c.moveToNext()) {
-            val name = c.getString(nameIndex)
-            val number = c.getString(numberIndex)
-            val date = c.getLong(dateIndex)
-            val duration = c.getInt(durationIndex)
-            val type = c.getInt(typeIndex)
+            if (!number.startsWith("+")) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val defaultDialingCode =
+                        DataStorePref(context).readString(key = "defaultDialingCode", default = "")
 
-            val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
-            val timeString = timeFormat.format(Date(date))
+                    number = "${defaultDialingCode}${number}"
+                }
+            }
 
             val dateFormat = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
             val dateString = dateFormat.format(Date(date))
 
-            val caller = CallerModel(
-                callerName = name,
+            val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
+            val timeString = timeFormat.format(Date(date))
+
+            val call = CallModel(
+                name = name,
                 phoneNumber = number,
                 date = dateString,
                 time = timeString,
@@ -69,14 +79,14 @@ fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallerMod
                 callMap[dateString]!!["unknown"] = mutableMapOf()
             }
 
-            if (name.isNotBlank()) {
-                if (!callMap[dateString]!!["known"]!!.containsKey(number)) {
-                    callMap[dateString]!!["known"]!![number] = caller
-                }
+            val callerType = if (name.isNotBlank()) {
+                "known"
             } else {
-                if (!callMap[dateString]!!["unknown"]!!.containsKey(number)) {
-                    callMap[dateString]!!["unknown"]!![number] = caller
-                }
+                "unknown"
+            }
+
+            if (!callMap[dateString]!![callerType]!!.containsKey(number)) {
+                callMap[dateString]!![callerType]!![number] = call
             }
         }
     }
@@ -84,41 +94,38 @@ fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallerMod
     return callMap
 }
 
-
-fun getCallsLog(context: Context, phoneNumber: String): List<CallerModel> {
+fun getCallsLog(context: Context, phoneNumber: String): List<CallModel> {
     //    [CallerModel, CallerModel, ...]
-    val callMap = mutableListOf<CallerModel>()
+    val callMap = mutableListOf<CallModel>()
 
-    val cursor = context.contentResolver.query(
+    context.contentResolver.query(
         CallLog.Calls.CONTENT_URI,
         null,
         null,
         null,
         CallLog.Calls.DATE + " DESC"
-    )
+    )?.use { cursor ->
+        val nameIndex = cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)
+        val numberIndex = cursor.getColumnIndex(CallLog.Calls.NUMBER)
+        val dateIndex = cursor.getColumnIndex(CallLog.Calls.DATE)
+        val typeIndex = cursor.getColumnIndex(CallLog.Calls.TYPE)
+        val durationIndex = cursor.getColumnIndex(CallLog.Calls.DURATION)
 
-    cursor?.use { c ->
-        val nameIndex = c.getColumnIndex(CallLog.Calls.CACHED_NAME)
-        val numberIndex = c.getColumnIndex(CallLog.Calls.NUMBER)
-        val dateIndex = c.getColumnIndex(CallLog.Calls.DATE)
-        val typeIndex = c.getColumnIndex(CallLog.Calls.TYPE)
-        val durationIndex = c.getColumnIndex(CallLog.Calls.DURATION)
-
-        while (c.moveToNext()) {
-            val name = c.getString(nameIndex)
-            val number = c.getString(numberIndex)
-            val date = c.getLong(dateIndex)
-            val duration = c.getInt(durationIndex)
-            val type = c.getInt(typeIndex)
-
-            val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
-            val timeString = timeFormat.format(Date(date))
+        while (cursor.moveToNext()) {
+            val name = cursor.getString(nameIndex)
+            val number = cursor.getString(numberIndex)
+            val date = cursor.getLong(dateIndex)
+            val type = cursor.getInt(typeIndex)
+            val duration = cursor.getInt(durationIndex)
 
             val dateFormat = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
             val dateString = dateFormat.format(Date(date))
 
-            val caller = CallerModel(
-                callerName = name,
+            val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
+            val timeString = timeFormat.format(Date(date))
+
+            val call = CallModel(
+                name = name,
                 phoneNumber = number,
                 date = dateString,
                 time = timeString,
@@ -126,8 +133,8 @@ fun getCallsLog(context: Context, phoneNumber: String): List<CallerModel> {
                 duration = formatDuration(duration)
             )
 
-            if (caller.phoneNumber == phoneNumber) {
-                callMap.add(caller)
+            if (call.phoneNumber == phoneNumber) {
+                callMap.add(call)
             }
         }
     }

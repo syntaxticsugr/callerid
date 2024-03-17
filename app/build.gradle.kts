@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.realm.kotlin)
 }
 
 android {
@@ -70,6 +71,7 @@ dependencies {
     implementation(libs.googlecode.libphonenumber)
     implementation(libs.jetpack.compose.percentage.units)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.realm.base)
     implementation(platform(libs.androidx.compose.bom))
     implementation(project(":tCaller"))
     testImplementation(libs.junit)

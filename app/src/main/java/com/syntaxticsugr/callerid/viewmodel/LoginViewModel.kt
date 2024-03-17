@@ -9,8 +9,9 @@ import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.utils.getDeviceRegion
-import com.syntaxticsugr.callerid.utils.getDialingCode
+import com.syntaxticsugr.callerid.utils.getDialingCodeFromCountryCode
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
+import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -24,7 +25,7 @@ class LoginViewModel(
     var lastName by mutableStateOf("")
     var lastNameError by mutableStateOf(false)
 
-    var phoneNumber by mutableStateOf(getDialingCode(getDeviceRegion()))
+    var phoneNumber by mutableStateOf(getDialingCodeFromCountryCode(getDeviceRegion()))
     var phoneNumberError by mutableStateOf(false)
 
     var email by mutableStateOf("")
@@ -40,6 +41,10 @@ class LoginViewModel(
             pref.writeString(key = "lastName", value = lastName.trim())
             pref.writeString(key = "phoneNumber", value = internationalFormatPhoneNumber())
             pref.writeString(key = "email", value = email.trim())
+            pref.writeString(
+                key = "defaultDialingCode",
+                value = "+${getDialingCodeFromPhoneNumber(internationalFormatPhoneNumber())}"
+            )
         }
     }
 

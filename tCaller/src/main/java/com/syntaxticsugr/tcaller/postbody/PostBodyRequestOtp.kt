@@ -12,7 +12,7 @@ import com.syntaxticsugr.tcaller.utils.getDeviceId
 import com.syntaxticsugr.tcaller.utils.getDeviceLanguage
 import com.syntaxticsugr.tcaller.utils.getDeviceManufacturer
 import com.syntaxticsugr.tcaller.utils.getDeviceModel
-import com.syntaxticsugr.tcaller.utils.getDialingCode
+import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
 import com.syntaxticsugr.tcaller.utils.getMobileServices
 
 fun postBodyRequestOtp(
@@ -22,7 +22,7 @@ fun postBodyRequestOtp(
 ): RequestOtpDataModel {
     return RequestOtpDataModel(
         countryCode = getCountryCode(phoneNumber),
-        dialingCode = getDialingCode(phoneNumber),
+        dialingCode = getDialingCodeFromPhoneNumber(phoneNumber),
         installationDetails = InstallationDetailsDataModel(
             app = AppDataModel(
                 buildVersion = trueCallerAppVersion.buildVersion,
