@@ -5,7 +5,7 @@ import com.syntaxticsugr.tcaller.TcallerApiClient
 import com.syntaxticsugr.tcaller.enums.RequestResult
 import com.syntaxticsugr.tcaller.postbody.postBodyRequestOtp
 import com.syntaxticsugr.tcaller.utils.AuthKeyManager
-import com.syntaxticsugr.tcaller.utils.stringToJson
+import com.syntaxticsugr.tcaller.utils.toJson
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -25,16 +25,16 @@ suspend fun TcallerApiClient.requestOtp(
             setBody(Json.encodeToString(postBodyRequestOtp))
         }
 
-    val responseJson = stringToJson(response.body<String>())
+    val resultJson = response.body<String>().toJson()
 
-    val result = if ((responseJson.getInt("status") == 1) || (responseJson.getInt("status") == 9)) {
+    val result = if ((resultJson.getInt("status") == 1) || (resultJson.getInt("status") == 9)) {
         RequestResult.OTP_SENT
-    } else if (responseJson.getInt("status") == 3) {
-        AuthKeyManager.saveAuthKey(context, responseJson)
+    } else if (resultJson.getInt("status") == 3) {
+        AuthKeyManager.saveAuthKey(context, resultJson)
         RequestResult.ALREADY_VERIFIED
     } else {
         RequestResult.ERROR
     }
 
-    return mapOf(result to responseJson)
+    return mapOf(result to resultJson)
 }

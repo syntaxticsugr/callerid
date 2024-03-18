@@ -4,7 +4,7 @@ import android.content.Context
 import com.syntaxticsugr.tcaller.TcallerApiClient
 import com.syntaxticsugr.tcaller.utils.AuthKeyManager
 import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
-import com.syntaxticsugr.tcaller.utils.stringToJson
+import com.syntaxticsugr.tcaller.utils.toJson
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -96,5 +96,7 @@ suspend fun TcallerApiClient.search(context: Context, q: String): JSONObject {
         parameter("locAddr", null)
     }
 
-    return stringToJson(response.body<String>())
+    val resultJson = response.body<String>().toJson()
+
+    return resultJson.getJSONArray("data").getJSONObject(0)
 }

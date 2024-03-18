@@ -5,7 +5,7 @@ import com.syntaxticsugr.tcaller.TcallerApiClient
 import com.syntaxticsugr.tcaller.enums.VerifyResult
 import com.syntaxticsugr.tcaller.postbody.postBodyVerifyOtp
 import com.syntaxticsugr.tcaller.utils.AuthKeyManager
-import com.syntaxticsugr.tcaller.utils.stringToJson
+import com.syntaxticsugr.tcaller.utils.toJson
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -27,20 +27,20 @@ suspend fun TcallerApiClient.verifyOtp(
             setBody(Json.encodeToString(postBodyVerifyOtp))
         }
 
-    val responseJson = stringToJson(response.body<String>())
+    val resultJson = response.body<String>().toJson()
 
-    val result = if (responseJson.getInt("status") == 2) {
-        AuthKeyManager.saveAuthKey(context, responseJson)
+    val result = if (resultJson.getInt("status") == 2) {
+        AuthKeyManager.saveAuthKey(context, resultJson)
         VerifyResult.VERIFICATION_SUCCESSFUL
-    } else if (responseJson.getInt("status") == 11) {
+    } else if (resultJson.getInt("status") == 11) {
         VerifyResult.INVALID_OTP
-    } else if (responseJson.getInt("status") == 7) {
+    } else if (resultJson.getInt("status") == 7) {
         VerifyResult.RETRIES_LIMIT_EXCEEDED
-    } else if (responseJson.getBoolean("suspended")) {
+    } else if (resultJson.getBoolean("suspended")) {
         VerifyResult.ACCOUNT_SUSPENDED
     } else {
         VerifyResult.ERROR
     }
 
-    return mapOf(result to responseJson)
+    return mapOf(result to resultJson)
 }

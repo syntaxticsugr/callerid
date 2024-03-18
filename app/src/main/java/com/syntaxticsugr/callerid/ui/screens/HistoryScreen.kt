@@ -30,7 +30,7 @@ import com.syntaxticsugr.callerid.ui.widgets.CallerCard
 import com.syntaxticsugr.callerid.ui.widgets.ProfileAvatar
 import com.syntaxticsugr.callerid.utils.PhoneNumberInfoHelper
 import com.syntaxticsugr.callerid.utils.getCallsLog
-import com.syntaxticsugr.callerid.utils.getName
+import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
 import com.syntaxticsugr.callerid.utils.makePhoneCall
 
 @Composable
@@ -47,7 +47,7 @@ fun HistoryScreen(
 
     if (isValid && name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
-            name = getName(context, calls[0].phoneNumber)
+            name = PhoneNumberInfoHelper.getName(context, calls[0].phoneNumber)
         }
     }
 
@@ -96,8 +96,7 @@ fun HistoryScreen(
                 }
             }
 
-            LazyColumn(
-            ) {
+            LazyColumn {
                 items(calls) { call ->
                     CallerCard(call = call)
                 }

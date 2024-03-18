@@ -3,7 +3,8 @@ package com.syntaxticsugr.tcaller.tCallerApiFeatures
 import android.content.Context
 import com.syntaxticsugr.tcaller.TcallerApiClient
 import com.syntaxticsugr.tcaller.utils.AuthKeyManager
-import com.syntaxticsugr.tcaller.utils.stringToJson
+import com.syntaxticsugr.tcaller.utils.toJson
+import com.syntaxticsugr.tcaller.utils.toList
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -11,7 +12,7 @@ import io.ktor.client.request.parameter
 import io.ktor.http.HttpHeaders
 import org.json.JSONObject
 
-suspend fun TcallerApiClient.bulkSearch(context: Context, q: List<String>): JSONObject {
+suspend fun TcallerApiClient.bulkSearch(context: Context, q: List<String>): List<JSONObject> {
     //    {
     //        "data": [
     //            {
@@ -101,5 +102,7 @@ suspend fun TcallerApiClient.bulkSearch(context: Context, q: List<String>): JSON
         parameter("locAddr", null)
     }
 
-    return stringToJson(response.body<String>())
+    val resultJson = response.body<String>().toJson()
+
+    return resultJson.getJSONArray("data").toList()
 }

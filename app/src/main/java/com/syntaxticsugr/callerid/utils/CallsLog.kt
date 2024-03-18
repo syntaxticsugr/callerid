@@ -4,7 +4,6 @@ import android.content.Context
 import android.provider.CallLog
 import com.syntaxticsugr.callerid.datamodel.CallModel
 import com.syntaxticsugr.callerid.datastore.DataStorePref
-import com.syntaxticsugr.callerid.enums.CallerType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

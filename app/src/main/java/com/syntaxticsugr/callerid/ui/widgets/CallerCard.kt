@@ -30,13 +30,12 @@ import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.datamodel.CallModel
 import com.syntaxticsugr.callerid.navigation.Screens
+import com.syntaxticsugr.callerid.utils.PhoneNumberInfoHelper
 import com.syntaxticsugr.callerid.utils.callTypeString
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
-import com.syntaxticsugr.callerid.utils.getName
 import com.syntaxticsugr.callerid.utils.makePhoneCall
 import com.syntaxticsugr.callerid.utils.savePhoneNumber
 import com.syntaxticsugr.callerid.utils.sendMessage
-
 
 @Composable
 fun CallerCard(
@@ -52,7 +51,7 @@ fun CallerCard(
 
     if (isValid && name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
-            name = getName(context, call.phoneNumber)
+            name = PhoneNumberInfoHelper.getName(context, call.phoneNumber)
         }
     }
 
