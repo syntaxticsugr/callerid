@@ -28,6 +28,7 @@ import com.slaviboy.composeunits.sw
 import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.ui.widgets.CallerCard
 import com.syntaxticsugr.callerid.ui.widgets.ProfileAvatar
+import com.syntaxticsugr.callerid.utils.PhoneNumberInfoHelper
 import com.syntaxticsugr.callerid.utils.getCallsLog
 import com.syntaxticsugr.callerid.utils.getName
 import com.syntaxticsugr.callerid.utils.makePhoneCall
@@ -40,9 +41,11 @@ fun HistoryScreen(
 
     val calls by remember { mutableStateOf(getCallsLog(context, phoneNumber)) }
 
+    val isValid by remember { mutableStateOf(isValidPhoneNumber(calls[0].phoneNumber)) }
+
     var name by remember { mutableStateOf(calls[0].name) }
 
-    if (name.isNullOrBlank()) {
+    if (isValid && name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
             name = getName(context, calls[0].phoneNumber)
         }
@@ -80,7 +83,7 @@ fun HistoryScreen(
                 Spacer(modifier = Modifier.width(0.06.dw))
 
                 Column {
-                    if (name != null) {
+                    if (!name.isNullOrBlank()) {
                         Text(
                             text = name!!,
                             fontSize = 0.06.sw

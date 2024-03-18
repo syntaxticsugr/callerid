@@ -31,6 +31,7 @@ import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.datamodel.CallModel
 import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.utils.callTypeString
+import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
 import com.syntaxticsugr.callerid.utils.getName
 import com.syntaxticsugr.callerid.utils.makePhoneCall
 import com.syntaxticsugr.callerid.utils.savePhoneNumber
@@ -45,9 +46,11 @@ fun CallerCard(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
+    val isValid by remember { mutableStateOf(isValidPhoneNumber(call.phoneNumber)) }
+
     var name by remember { mutableStateOf(call.name) }
 
-    if (name.isNullOrBlank()) {
+    if (isValid && name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
             name = getName(context, call.phoneNumber)
         }
@@ -80,7 +83,7 @@ fun CallerCard(
 
             Column {
                 if (call.name.isNullOrBlank()) {
-                    if (name != null) {
+                    if (!name.isNullOrBlank()) {
                         Text(text = name!!)
                     }
                     Text(text = call.phoneNumber)
