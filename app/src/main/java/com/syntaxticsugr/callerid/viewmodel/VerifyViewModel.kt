@@ -61,25 +61,32 @@ class VerifyViewModel(
                 otpError = false
                 isVerifying = true
 
-                val verifyResponse =
-                    TcallerApiClient.verifyOtp(appContext, phoneNumber, requestId, otp)
+                val (result, resultJson) = TcallerApiClient.verifyOtp(
+                    appContext,
+                    phoneNumber,
+                    requestId,
+                    otp
+                )
 
-                if (verifyResponse.keys.contains(VerifyResult.VERIFICATION_SUCCESSFUL)) {
-                    isVerificationSuccessful = true
-                } else if (verifyResponse.containsKey(VerifyResult.INVALID_OTP)) {
-                    isVerifying = false
-                    otpError = true
-                } else if (verifyResponse.containsKey(VerifyResult.RETRIES_LIMIT_EXCEEDED)) {
-                    errorMessage =
-                        "${verifyResponse[VerifyResult.RETRIES_LIMIT_EXCEEDED]!!.getString("message")} :("
-                    unexpectedError = true
-                } else if (verifyResponse.containsKey(VerifyResult.ACCOUNT_SUSPENDED)) {
-                    errorMessage =
-                        "${verifyResponse[VerifyResult.ACCOUNT_SUSPENDED]!!.getString("message")} :("
-                    unexpectedError = true
-                } else {
-                    errorMessage = "${verifyResponse[VerifyResult.ERROR]!!.getString("message")} :("
-                    unexpectedError = true
+                when (result) {
+                    VerifyResult.VERIFICATION_SUCCESSFUL -> {
+                        isVerificationSuccessful = true
+                    }
+
+                    VerifyResult.INVALID_OTP -> {
+                        isVerifying = false
+                        otpError = true
+                    }
+
+                    VerifyResult.RETRIES_LIMIT_EXCEEDED, VerifyResult.ACCOUNT_SUSPENDED -> {
+                        errorMessage = "${resultJson.getString("message")} :("
+                        unexpectedError = true
+                    }
+
+                    else -> {
+                        errorMessage = "${resultJson.getString("message")} :("
+                        unexpectedError = true
+                    }
                 }
             }
         }
@@ -87,16 +94,22 @@ class VerifyViewModel(
 
     private fun requestOTP() {
         viewModelScope.launch(Dispatchers.IO) {
-            val requestResponse = TcallerApiClient.requestOtp(appContext, phoneNumber)
+            val (result, resultJson) = TcallerApiClient.requestOtp(appContext, phoneNumber)
 
-            if (requestResponse.keys.contains(RequestResult.OTP_SENT)) {
-                requestId = requestResponse[RequestResult.OTP_SENT]!!.getString("requestId")
-                isOtpSent = true
-            } else if (requestResponse.keys.contains(RequestResult.ALREADY_VERIFIED)) {
-                isVerificationSuccessful = true
-            } else {
-                errorMessage = "${requestResponse[RequestResult.ERROR]!!.getString("message")} :("
-                unexpectedError = true
+            when (result) {
+                RequestResult.OTP_SENT -> {
+                    requestId = resultJson.getString("requestId")
+                    isOtpSent = true
+                }
+
+                RequestResult.ALREADY_VERIFIED -> {
+                    isVerificationSuccessful = true
+                }
+
+                else -> {
+                    errorMessage = "${resultJson.getString("message")} :("
+                    unexpectedError = true
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.syntaxticsugr.tcaller.tCallerApiFeatures
 
 import android.content.Context
 import com.syntaxticsugr.tcaller.TcallerApiClient
+import com.syntaxticsugr.tcaller.enums.SearchResult
 import com.syntaxticsugr.tcaller.utils.AuthKeyManager
 import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
 import com.syntaxticsugr.tcaller.utils.toJson
@@ -12,7 +13,7 @@ import io.ktor.client.request.parameter
 import io.ktor.http.HttpHeaders
 import org.json.JSONObject
 
-suspend fun TcallerApiClient.search(context: Context, q: String): JSONObject {
+suspend fun TcallerApiClient.search(context: Context, q: String): Pair<SearchResult, JSONObject> {
     //    {
     //        "data": [
     //            {
@@ -96,7 +97,18 @@ suspend fun TcallerApiClient.search(context: Context, q: String): JSONObject {
         parameter("locAddr", null)
     }
 
-    val resultJson = response.body<String>().toJson()
+    val result = when (response.status.value) {
+        200 -> SearchResult.SUCCESS
+        429 -> SearchResult.REQUEST_QUOTA_EXCEEDED
+        else -> SearchResult.UNEXPECTED_ERROR
+    }
 
-    return resultJson.getJSONArray("data").getJSONObject(0)
+    val resultJson = when (result) {
+        SearchResult.SUCCESS -> response.body<String>().toJson().getJSONArray("data")
+            .getJSONObject(0)
+
+        else -> response.body<String>().toJson()
+    }
+
+    return Pair(result, resultJson)
 }

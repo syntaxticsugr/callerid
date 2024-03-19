@@ -10,9 +10,13 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import org.json.JSONObject
 
-suspend fun TcallerApiClient.bulkSearch(context: Context, q: List<String>): List<JSONObject> {
+suspend fun TcallerApiClient.bulkSearch(
+    context: Context,
+    q: List<String>
+): Pair<HttpStatusCode, List<JSONObject>> {
     //    {
     //        "data": [
     //            {
@@ -102,7 +106,7 @@ suspend fun TcallerApiClient.bulkSearch(context: Context, q: List<String>): List
         parameter("locAddr", null)
     }
 
-    val resultJson = response.body<String>().toJson()
+    val resultList = response.body<String>().toJson().getJSONArray("data").toList()
 
-    return resultJson.getJSONArray("data").toList()
+    return Pair(response.status, resultList)
 }

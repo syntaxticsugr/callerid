@@ -18,7 +18,7 @@ suspend fun TcallerApiClient.verifyOtp(
     phoneNumber: String,
     requestId: String,
     token: String
-): Map<VerifyResult, JSONObject> {
+): Pair<VerifyResult, JSONObject> {
     val postBodyVerifyOtp = postBodyVerifyOtp(phoneNumber, requestId, token)
 
     val response =
@@ -42,5 +42,5 @@ suspend fun TcallerApiClient.verifyOtp(
         VerifyResult.ERROR
     }
 
-    return mapOf(result to resultJson)
+    return Pair(result, resultJson)
 }

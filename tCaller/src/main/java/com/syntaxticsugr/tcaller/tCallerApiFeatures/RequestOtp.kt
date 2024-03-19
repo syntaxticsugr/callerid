@@ -16,7 +16,7 @@ import org.json.JSONObject
 suspend fun TcallerApiClient.requestOtp(
     context: Context,
     phoneNumber: String
-): Map<RequestResult, JSONObject> {
+): Pair<RequestResult, JSONObject> {
     val postBodyRequestOtp = postBodyRequestOtp(context, phoneNumber, tCallerAppVersion)
 
     val response =
@@ -36,5 +36,5 @@ suspend fun TcallerApiClient.requestOtp(
         RequestResult.ERROR
     }
 
-    return mapOf(result to resultJson)
+    return Pair(result, resultJson)
 }
