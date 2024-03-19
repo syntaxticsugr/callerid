@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.slaviboy.composeunits.dw
@@ -45,11 +46,11 @@ fun CallerCard(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    val isValid by remember { mutableStateOf(isValidPhoneNumber(call.phoneNumber)) }
+    val isValidPhoneNumber by remember { mutableStateOf(isValidPhoneNumber(call.phoneNumber)) }
 
     var name by remember { mutableStateOf(call.name) }
 
-    if (isValid && name.isNullOrBlank()) {
+    if (isValidPhoneNumber && name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
             name = PhoneNumberInfoHelper.getName(context, call.phoneNumber)
         }
@@ -63,7 +64,7 @@ fun CallerCard(
             .clickable {
                 if (call.name.isNullOrBlank()) {
                     expanded = !expanded
-                } else {
+                } else if (isValidPhoneNumber) {
                     navController.navigate("${Screens.History.route}/${call.phoneNumber}")
                 }
             }
@@ -74,6 +75,7 @@ fun CallerCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ProfileAvatar(
+                isValidPhoneNumber = isValidPhoneNumber,
                 name = name,
                 size = 0.12.dw
             )
@@ -82,10 +84,23 @@ fun CallerCard(
 
             Column {
                 if (call.name.isNullOrBlank()) {
+                    if (!isValidPhoneNumber) {
+                        Text(
+                            text = "Invalid Phone Number!",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                     if (!name.isNullOrBlank()) {
                         Text(text = name!!)
                     }
-                    Text(text = call.phoneNumber)
+                    Text(
+                        text = call.phoneNumber,
+                        color = if (isValidPhoneNumber) {
+                            Color.Unspecified
+                        } else {
+                            MaterialTheme.colorScheme.error
+                        }
+                    )
                 } else {
                     Text(text = call.name)
                 }
@@ -109,20 +124,22 @@ fun CallerCard(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(
-                onClick = {
-                    makePhoneCall(context, call.phoneNumber)
+            if (isValidPhoneNumber) {
+                IconButton(
+                    onClick = {
+                        makePhoneCall(context, call.phoneNumber)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_call_24),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = null
+                    )
                 }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_call_24),
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = null
-                )
             }
         }
 
-        if (call.name.isNullOrBlank()) {
+        if (isValidPhoneNumber && call.name.isNullOrBlank()) {
             AnimatedVisibility(
                 visible = expanded
             ) {

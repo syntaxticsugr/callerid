@@ -51,7 +51,10 @@ fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallModel
             if (!number.startsWith("+")) {
                 CoroutineScope(Dispatchers.IO).launch {
                     val defaultDialingCode =
-                        DataStorePref(context).readString(key = "defaultDialingCode", default = "")
+                        DataStorePref(context).readString(
+                            key = "defaultDialingCode",
+                            default = ""
+                        )
 
                     number = "${defaultDialingCode}${number}"
                 }
@@ -112,10 +115,22 @@ fun getCallsLog(context: Context, phoneNumber: String): List<CallModel> {
 
         while (cursor.moveToNext()) {
             val name = cursor.getString(nameIndex)
-            val number = cursor.getString(numberIndex)
+            var number = cursor.getString(numberIndex)
             val date = cursor.getLong(dateIndex)
             val type = cursor.getInt(typeIndex)
             val duration = cursor.getInt(durationIndex)
+
+            if (!number.startsWith("+")) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val defaultDialingCode =
+                        DataStorePref(context).readString(
+                            key = "defaultDialingCode",
+                            default = ""
+                        )
+
+                    number = "${defaultDialingCode}${number}"
+                }
+            }
 
             val dateFormat = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
             val dateString = dateFormat.format(Date(date))
