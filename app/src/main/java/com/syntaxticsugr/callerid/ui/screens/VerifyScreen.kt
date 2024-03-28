@@ -101,7 +101,7 @@ fun VerifyScreen(
                         Button(
                             onClick = {
                                 keyboardController?.hide()
-                                verifyViewModel.verifyOTP()
+                                verifyViewModel.verifyOtp()
                             }
                         ) {
                             Text(

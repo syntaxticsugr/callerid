@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dh
@@ -41,11 +42,7 @@ fun LogInScreen(
 
     LaunchedEffect(imeState.value) {
         scrollState.animateScrollTo(
-            value = if (imeState.value) {
-                scrollState.maxValue
-            } else {
-                0
-            },
+            value = 0,
             animationSpec = tween(durationMillis = 400)
         )
     }
@@ -57,17 +54,18 @@ fun LogInScreen(
                 .padding(paddingValues)
                 .verticalScroll(
                     state = scrollState,
-                    enabled = false
+                    enabled = imeState.value
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(0.20.dh))
+            Spacer(modifier = Modifier.height(0.15.dh))
 
             Text(
-                text = "LogIn using existing TrueCaller account."
+                text = "LogIn using existing TrueCaller account.",
+                fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(0.03.dh))
+            Spacer(modifier = Modifier.height(0.05.dh))
 
             CustomTextField(
                 value = loginViewModel.firstName,
@@ -114,7 +112,7 @@ fun LogInScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(0.40.dh))
+            Spacer(modifier = Modifier.height(0.60.dh))
         }
     }
 }

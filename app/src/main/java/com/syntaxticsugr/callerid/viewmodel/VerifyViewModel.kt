@@ -47,7 +47,7 @@ class VerifyViewModel(
         }
     }
 
-    fun verifyOTP() {
+    fun verifyOtp() {
         viewModelScope.launch(Dispatchers.IO) {
             if (!otp.matches(Regex("^\\s*\\d{6}\\s*\$"))) {
                 otpError = true
@@ -81,7 +81,7 @@ class VerifyViewModel(
         }
     }
 
-    private fun requestOTP() {
+    private fun requestOtp() {
         viewModelScope.launch(Dispatchers.IO) {
             val (result, resultJson) = TcallerApiClient.requestOtp(
                 context = appContext,
@@ -115,9 +115,13 @@ class VerifyViewModel(
         }
     }
 
-    init {
+    private fun getUserCredsAndRequestOtp() {
         getUserCreds()
-        requestOTP()
+        requestOtp()
+    }
+
+    init {
+        getUserCredsAndRequestOtp()
     }
 
 }

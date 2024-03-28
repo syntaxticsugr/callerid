@@ -10,6 +10,7 @@ import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.utils.getCountryCode
 import com.syntaxticsugr.callerid.utils.getDialingCodeFromCountryCode
+import com.syntaxticsugr.callerid.utils.isValidEmail
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
 import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
 import kotlinx.coroutines.Dispatchers
@@ -36,8 +37,12 @@ class LoginViewModel(
         return "+$str"
     }
 
+    private fun formattedEmail(): String {
+        return email.trim()
+    }
+
     private fun formattedPhoneNumber(): String {
-        return prefixU002B(phoneNumber)
+        return prefixU002B(phoneNumber.filterNot { it.isWhitespace() })
     }
 
     private fun saveUserCreds() {
@@ -47,7 +52,7 @@ class LoginViewModel(
             pref.writeString(key = "firstName", value = firstName.trim())
             pref.writeString(key = "lastName", value = lastName.trim())
             pref.writeString(key = "phoneNumber", value = formattedPhoneNumber())
-            pref.writeString(key = "email", value = email.trim())
+            pref.writeString(key = "email", value = formattedEmail())
             pref.writeString(
                 key = "defaultDialingCode",
                 value = prefixU002B(dialingCode.toString())
@@ -71,11 +76,12 @@ class LoginViewModel(
             lastNameError = true
             isValid = false
         }
-        if (
-            !phoneNumber.matches(Regex("^\\s*\\d{2,}\\s*$"))
-            || !isValidPhoneNumber(formattedPhoneNumber())
-        ) {
+        if (!isValidPhoneNumber(formattedPhoneNumber())) {
             phoneNumberError = true
+            isValid = false
+        }
+        if (email.isNotBlank() && !isValidEmail(formattedEmail())) {
+            emailError = true
             isValid = false
         }
 
