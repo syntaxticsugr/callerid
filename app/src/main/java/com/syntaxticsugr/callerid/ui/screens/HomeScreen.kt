@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -50,7 +49,7 @@ fun HomeScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    val callsLog by remember { mutableStateOf(getCallsLog(context = context)) }
+    val callsLog = getCallsLog(context = context)
     val dates = callsLog.keys.toList()
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -62,11 +61,11 @@ fun HomeScreen(
         }
     }
 
-    Scaffold { innerPadding ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(paddingValues),
         ) {
             Row(
                 modifier = Modifier
@@ -75,11 +74,11 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SearchBar(context)
+                SearchBar(context = context, homeViewModel = homeViewModel)
 
                 IconButton(
                     onClick = {
-                        homeViewModel.openSettings(navController)
+                        homeViewModel.openProfilePage(navController)
                     }
                 ) {
                     Icon(
@@ -96,7 +95,11 @@ fun HomeScreen(
             ) {
                 dates.forEachIndexed { index, date ->
                     Tab(
-                        text = { Text(date) },
+                        text = {
+                            Text(
+                                text = date
+                            )
+                        },
                         selected = selectedTabIndex == index,
                         onClick = {
                             coroutineScope.launch {
@@ -126,17 +129,17 @@ fun HomeScreen(
                     if (unknownCallersList.isNotEmpty()) {
                         item {
                             Text(
-                                text = "Unknown Callers",
                                 modifier = Modifier
                                     .padding(top = 0.04.dw),
+                                text = "Unknown Callers"
                             )
                         }
 
                         items(unknownCallersList) { phoneNumber ->
                             CallerCard(
                                 context = context,
-                                navController,
-                                unknownCallers[phoneNumber]!!
+                                navController = navController,
+                                call = unknownCallers[phoneNumber]!!
                             )
                         }
                     }
@@ -144,17 +147,17 @@ fun HomeScreen(
                     if (knownCallersList.isNotEmpty()) {
                         item {
                             Text(
-                                text = "From Contacts",
                                 modifier = Modifier
                                     .padding(top = 0.04.dw),
+                                text = "From Contacts"
                             )
                         }
 
                         items(knownCallersList) { phoneNumber ->
                             CallerCard(
                                 context = context,
-                                navController,
-                                knownCallers[phoneNumber]!!
+                                navController = navController,
+                                call = knownCallers[phoneNumber]!!
                             )
                         }
                     }

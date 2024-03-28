@@ -1,12 +1,10 @@
 package com.syntaxticsugr.callerid.navigation
 
 sealed class Screens(val route: String) {
-
-    object Welcome : Screens(route = "welcome_screen")
-    object Permissions : Screens(route = "permissions_screen")
-    object LogIn : Screens(route = "login_screen")
-    object Verify : Screens(route = "verify_screen")
-    object Home : Screens(route = "home_screen")
-    object History : Screens(route = "history_screen")
-
+    data object Welcome : Screens(route = "welcome_screen")
+    data object Permissions : Screens(route = "permissions_screen")
+    data object LogIn : Screens(route = "login_screen")
+    data object Verify : Screens(route = "verify_screen")
+    data object Home : Screens(route = "home_screen")
+    data object History : Screens(route = "history_screen")
 }

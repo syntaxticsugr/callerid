@@ -29,21 +29,15 @@ class VerifyViewModel(
     lateinit var lastName: String
     lateinit var phoneNumber: String
     lateinit var email: String
-
-    var otp by mutableStateOf("")
-    var otpError by mutableStateOf(false)
-
     private lateinit var requestId: String
-    private lateinit var errorMessage: String
+    lateinit var errorMessage: String
 
     var isOtpSent by mutableStateOf(false)
-    var unexpectedError by mutableStateOf(false)
     var isVerifying by mutableStateOf(false)
     var isVerificationSuccessful by mutableStateOf(false)
-
-    fun getErrorMessage(): String {
-        return errorMessage
-    }
+    var otp by mutableStateOf("")
+    var otpError by mutableStateOf(false)
+    var unexpectedError by mutableStateOf(false)
 
     fun nextScreen(navController: NavController) {
         navController.navigate(Screens.Home.route) {
@@ -62,10 +56,10 @@ class VerifyViewModel(
                 isVerifying = true
 
                 val (result, resultJson) = TcallerApiClient.verifyOtp(
-                    appContext,
-                    phoneNumber,
-                    requestId,
-                    otp
+                    context = appContext,
+                    phoneNumber = phoneNumber,
+                    requestId = requestId,
+                    token = otp
                 )
 
                 when (result) {
@@ -76,11 +70,6 @@ class VerifyViewModel(
                     VerifyResult.INVALID_OTP -> {
                         isVerifying = false
                         otpError = true
-                    }
-
-                    VerifyResult.RETRIES_LIMIT_EXCEEDED, VerifyResult.ACCOUNT_SUSPENDED -> {
-                        errorMessage = "${resultJson.getString("message")} :("
-                        unexpectedError = true
                     }
 
                     else -> {
@@ -94,7 +83,10 @@ class VerifyViewModel(
 
     private fun requestOTP() {
         viewModelScope.launch(Dispatchers.IO) {
-            val (result, resultJson) = TcallerApiClient.requestOtp(appContext, phoneNumber)
+            val (result, resultJson) = TcallerApiClient.requestOtp(
+                context = appContext,
+                phoneNumber = phoneNumber
+            )
 
             when (result) {
                 RequestResult.OTP_SENT -> {

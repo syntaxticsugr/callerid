@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.viewmodel.VerifyViewModel
@@ -26,14 +27,13 @@ fun VerifyScreen(
     navController: NavHostController,
     verifyViewModel: VerifyViewModel = koinViewModel()
 ) {
-
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Scaffold { innerPadding ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(paddingValues)
                 .padding(start = 0.18.dw, end = 0.10.dw),
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.Center
@@ -41,20 +41,14 @@ fun VerifyScreen(
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text = "${verifyViewModel.firstname} ${verifyViewModel.lastName}"
+                text = buildAnnotatedString {
+                    append("${verifyViewModel.firstname} ${verifyViewModel.lastName}")
+                    append("\n${verifyViewModel.phoneNumber}")
+                    if (verifyViewModel.email.isNotEmpty()) {
+                        append("\n${verifyViewModel.email}")
+                    }
+                }
             )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = verifyViewModel.phoneNumber
-            )
-            if (verifyViewModel.email.isNotEmpty()) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = verifyViewModel.email
-                )
-            }
 
             Spacer(modifier = Modifier.height(0.05.dw))
 
@@ -72,7 +66,9 @@ fun VerifyScreen(
                         verifyViewModel.nextScreen(navController)
                     }
                 ) {
-                    Text("Next")
+                    Text(
+                        text = "Next"
+                    )
                 }
             } else {
                 if (verifyViewModel.isOtpSent) {
@@ -92,7 +88,11 @@ fun VerifyScreen(
                                 .fillMaxWidth(),
                             value = verifyViewModel.otp,
                             onValueChange = { verifyViewModel.otp = it },
-                            label = { Text("OTP") },
+                            label = {
+                                Text(
+                                    text = "OTP"
+                                )
+                            },
                             isError = verifyViewModel.otpError
                         )
 
@@ -104,7 +104,9 @@ fun VerifyScreen(
                                 verifyViewModel.verifyOTP()
                             }
                         ) {
-                            Text("Verify OTP")
+                            Text(
+                                text = "Verify OTP"
+                            )
                         }
                     }
                 } else {
@@ -112,7 +114,7 @@ fun VerifyScreen(
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            text = verifyViewModel.getErrorMessage()
+                            text = verifyViewModel.errorMessage
                         )
                     } else {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -129,5 +131,4 @@ fun VerifyScreen(
             }
         }
     }
-
 }

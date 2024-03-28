@@ -46,13 +46,12 @@ fun CallerCard(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    val isValidPhoneNumber by remember { mutableStateOf(isValidPhoneNumber(call.phoneNumber)) }
-
+    val isValidPhoneNumber = isValidPhoneNumber(call.phoneNumber)
     var name by remember { mutableStateOf(call.name) }
 
     if (isValidPhoneNumber && name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
-            name = PhoneNumberInfoHelper.getName(context, call.phoneNumber)
+            name = PhoneNumberInfoHelper.getName(context = context, phoneNumber = call.phoneNumber)
         }
     }
 
@@ -74,11 +73,7 @@ fun CallerCard(
                 .padding(0.02.dw),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ProfileAvatar(
-                isValidPhoneNumber = isValidPhoneNumber,
-                name = name,
-                size = 0.12.dw
-            )
+            ProfileAvatar(isValidPhoneNumber = isValidPhoneNumber, name = name, size = 0.12.dw)
 
             Spacer(modifier = Modifier.width(0.04.dw))
 
@@ -91,7 +86,9 @@ fun CallerCard(
                         )
                     }
                     if (!name.isNullOrBlank()) {
-                        Text(text = name!!)
+                        Text(
+                            text = name!!
+                        )
                     }
                     Text(
                         text = call.phoneNumber,
@@ -102,7 +99,9 @@ fun CallerCard(
                         }
                     )
                 } else {
-                    Text(text = call.name)
+                    Text(
+                        text = call.name
+                    )
                 }
 
                 Row(
@@ -112,12 +111,16 @@ fun CallerCard(
 
                     Spacer(modifier = Modifier.width(0.04.dw))
 
-                    Text(text = call.time)
+                    Text(
+                        text = call.time
+                    )
 
                     if (call.duration != "0 sec") {
                         Spacer(modifier = Modifier.width(0.04.dw))
 
-                        Text(text = call.duration)
+                        Text(
+                            text = call.duration
+                        )
                     }
                 }
             }
@@ -127,7 +130,7 @@ fun CallerCard(
             if (isValidPhoneNumber) {
                 IconButton(
                     onClick = {
-                        makePhoneCall(context, call.phoneNumber)
+                        makePhoneCall(context = context, phoneNumber = call.phoneNumber)
                     }
                 ) {
                     Icon(
@@ -151,7 +154,7 @@ fun CallerCard(
                 ) {
                     IconButton(
                         onClick = {
-                            sendMessage(context, call.phoneNumber)
+                            sendMessage(context = context, phoneNumber = call.phoneNumber)
                         }
                     ) {
                         Icon(
@@ -175,7 +178,11 @@ fun CallerCard(
 
                     IconButton(
                         onClick = {
-                            savePhoneNumber(context, call.phoneNumber, name)
+                            savePhoneNumber(
+                                context = context,
+                                phoneNumber = call.phoneNumber,
+                                name = name
+                            )
                         }
                     ) {
                         Icon(
@@ -194,6 +201,8 @@ fun CallerCard(
 fun CallerCard(
     call: CallModel
 ) {
+    val callTypeString = callTypeString(call.type)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -205,23 +214,31 @@ fun CallerCard(
         Spacer(modifier = Modifier.width(0.04.dw))
 
         Column {
-            Text(text = callTypeString(call.type))
+            Text(
+                text = callTypeString
+            )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = call.date)
+                Text(
+                    text = call.date
+                )
 
                 Spacer(modifier = Modifier.width(0.02.dw))
 
-                Text(text = call.time)
+                Text(
+                    text = call.time
+                )
             }
         }
 
         if (call.duration != "0 sec") {
             Spacer(modifier = Modifier.weight(1f))
 
-            Text(text = call.duration)
+            Text(
+                text = call.duration
+            )
         }
     }
 }

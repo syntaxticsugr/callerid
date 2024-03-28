@@ -23,17 +23,20 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val splashViewModel = getViewModel<SplashViewModel>()
+        splashViewModel.setStartDestination(this)
 
         installSplashScreen().setKeepOnScreenCondition {
             splashViewModel.isLoading.value
         }
 
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(
-                Color.TRANSPARENT, Color.TRANSPARENT
-            ),
             navigationBarStyle = SystemBarStyle.light(
-                Color.TRANSPARENT, Color.TRANSPARENT
+                scrim = Color.TRANSPARENT,
+                darkScrim = Color.TRANSPARENT
+            ),
+            statusBarStyle = SystemBarStyle.light(
+                scrim = Color.TRANSPARENT,
+                darkScrim = Color.TRANSPARENT
             )
         )
 
@@ -41,12 +44,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CallerIDTheme {
-                val startDestination by splashViewModel.startDestination
                 val navController = rememberNavController()
+                val startDestination by splashViewModel.startDestination
                 SetupNavGraph(navController = navController, startDestination = startDestination)
             }
         }
-
     }
 
 }

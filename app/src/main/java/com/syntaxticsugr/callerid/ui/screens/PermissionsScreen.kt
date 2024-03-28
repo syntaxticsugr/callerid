@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -24,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dw
@@ -37,8 +36,10 @@ fun PermissionsScreen(
     navController: NavHostController,
     permissionViewModel: PermissionsViewModel = koinViewModel()
 ) {
-
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
     var buttonText by remember { mutableStateOf(permissionViewModel.getButtonText(context)) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -47,33 +48,29 @@ fun PermissionsScreen(
         buttonText = permissionViewModel.getButtonText(context)
     }
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
-
     LaunchedEffect(lifecycleState) {
-        when (lifecycleState) {
-            Lifecycle.State.RESUMED -> {
-                buttonText = permissionViewModel.getButtonText(context)
-            }
-
-            else -> {}
+        if (lifecycleState == Lifecycle.State.RESUMED) {
+            buttonText = permissionViewModel.getButtonText(context)
         }
     }
 
-    Scaffold { innerPadding ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(paddingValues)
                 .padding(horizontal = 0.10.dw),
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = "CallerID needs the following permissions to work.\n\nREAD_CALL_LOGS\nTo display call logs within the App.\n\nCALL_PHONE\nTo make calls from within the App.",
-                textAlign = TextAlign.Start
+                text = buildAnnotatedString {
+                    append("CallerID needs the following permissions to work.")
+                    append("\n\nREAD_CALL_LOGS")
+                    append("\nTo display call logs within the App.")
+                    append("\n\nCALL_PHONE")
+                    append("\nTo make calls from within the App.")
+                }
             )
 
             Spacer(modifier = Modifier.height(0.10.dw))
@@ -93,5 +90,4 @@ fun PermissionsScreen(
             }
         }
     }
-
 }

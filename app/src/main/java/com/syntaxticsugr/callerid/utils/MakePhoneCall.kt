@@ -5,8 +5,8 @@ import android.content.Intent
 import android.net.Uri
 
 fun makePhoneCall(context: Context, phoneNumber: String) {
-    val intent = Intent(Intent.ACTION_CALL)
-    intent.data = Uri.parse("tel:${phoneNumber}")
+    val uri = Uri.parse("tel:${phoneNumber}")
+    val intent = Intent(Intent.ACTION_CALL, uri)
 
     context.startActivity(intent)
 }

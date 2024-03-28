@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 
@@ -21,7 +20,6 @@ fun ProfileAvatar(
     name: String?,
     size: Dp
 ) {
-
     val initial = if (name.isNullOrBlank()) "?" else name.take(1).uppercase()
 
     Box(
@@ -31,9 +29,7 @@ fun ProfileAvatar(
     ) {
         Text(
             text = initial,
-            style = TextStyle(
-                fontWeight = FontWeight.Bold
-            ),
+            fontWeight = FontWeight.Bold,
             color = if (isValidPhoneNumber) {
                 Color.Unspecified
             } else {
@@ -49,10 +45,10 @@ fun ProfileAvatar(
             )
         } else {
             CircularProgressIndicator(
-                progress = { 1.0f },
                 modifier = Modifier
                     .fillMaxSize(),
                 strokeWidth = size / 20,
+                progress = { 1.0f },
                 color = if (isValidPhoneNumber) {
                     ProgressIndicatorDefaults.circularColor
                 } else {
@@ -61,5 +57,4 @@ fun ProfileAvatar(
             )
         }
     }
-
 }

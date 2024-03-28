@@ -23,7 +23,9 @@ class CallerID : Application() {
         }
 
         realm = Realm.open(
-            configuration = RealmConfiguration.create(schema = setOf(PhoneNumberInfo::class))
+            configuration = RealmConfiguration.create(
+                schema = setOf(PhoneNumberInfo::class)
+            )
         )
     }
 

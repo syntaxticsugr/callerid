@@ -19,7 +19,7 @@ val calleridModule = module {
     }
 
     viewModel<SplashViewModel> {
-        SplashViewModel(androidApplication(), get())
+        SplashViewModel(get())
     }
 
     viewModel<WelcomeViewModel> {
@@ -39,7 +39,7 @@ val calleridModule = module {
     }
 
     viewModel<HomeViewModel> {
-        HomeViewModel(androidApplication())
+        HomeViewModel()
     }
 
 }

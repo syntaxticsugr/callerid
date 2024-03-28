@@ -1,3 +1,5 @@
+package com.syntaxticsugr.callerid.ui.widgets
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,12 +24,11 @@ fun CustomTextField(
     onValueChange: (String) -> Unit,
     label: String,
     prefix: String? = null,
-    leadingIcon: ImageVector? = null,
     supportingText: String? = null,
+    leadingIcon: ImageVector? = null,
     isError: Boolean = false,
     keyboardType: KeyboardType? = null
 ) {
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,7 +52,12 @@ fun CustomTextField(
                 .fillMaxWidth(),
             value = value,
             onValueChange = onValueChange,
-            label = { Text(label) },
+            singleLine = true,
+            label = {
+                Text(
+                    text = label
+                )
+            },
             prefix = if (prefix != null) {
                 {
                     Text(
@@ -71,14 +77,12 @@ fun CustomTextField(
             } else {
                 null
             },
-            singleLine = true,
             isError = isError,
             keyboardOptions = if (keyboardType != null) {
                 KeyboardOptions(keyboardType = keyboardType)
             } else {
-                KeyboardOptions()
+                KeyboardOptions.Default
             }
         )
     }
-
 }

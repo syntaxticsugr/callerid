@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.slaviboy.composeunits.dw
@@ -39,13 +41,11 @@ fun HistoryScreen(
 ) {
     val context = LocalContext.current
 
-    val calls by remember { mutableStateOf(getCallsLog(context, phoneNumber)) }
-
-    val isValid by remember { mutableStateOf(isValidPhoneNumber(calls[0].phoneNumber)) }
-
+    val calls = getCallsLog(context, phoneNumber)
     var name by remember { mutableStateOf(calls[0].name) }
+    val isValidPhoneNumber = isValidPhoneNumber(calls[0].phoneNumber)
 
-    if (isValid && name.isNullOrBlank()) {
+    if (isValidPhoneNumber && name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
             name = PhoneNumberInfoHelper.getName(context, calls[0].phoneNumber)
         }
@@ -65,20 +65,19 @@ fun HistoryScreen(
                 )
             }
         }
-    ) { innerPadding ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(paddingValues)
                 .padding(horizontal = 0.04.dw),
         ) {
-
             Row(
                 modifier = Modifier
                     .padding(horizontal = 0.02.dw, vertical = 0.06.dw),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileAvatar(name = name, size = 0.14.dw)
+                ProfileAvatar(isValidPhoneNumber = isValidPhoneNumber, name = name, size = 0.14.dw)
 
                 Spacer(modifier = Modifier.width(0.06.dw))
 
@@ -90,8 +89,13 @@ fun HistoryScreen(
                         )
                     }
                     Text(
-                        text = calls[0].phoneNumber,
-                        fontSize = 0.05.sw
+                        text = phoneNumber,
+                        fontSize = 0.05.sw,
+                        color = if (isValidPhoneNumber) {
+                            Color.Unspecified
+                        } else {
+                            MaterialTheme.colorScheme.error
+                        }
                     )
                 }
             }

@@ -1,6 +1,5 @@
 package com.syntaxticsugr.callerid.ui.screens
 
-import CustomTextField
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dh
 import com.slaviboy.composeunits.dw
+import com.syntaxticsugr.callerid.ui.widgets.CustomTextField
 import com.syntaxticsugr.callerid.utils.rememberImeState
 import com.syntaxticsugr.callerid.viewmodel.LoginViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -34,29 +34,40 @@ fun LogInScreen(
     navController: NavHostController,
     loginViewModel: LoginViewModel = koinViewModel()
 ) {
-
     val keyboardController = LocalSoftwareKeyboardController.current
-
     val imeState = rememberImeState()
+
     val scrollState = rememberScrollState()
 
     LaunchedEffect(imeState.value) {
-        if (imeState.value) {
-            scrollState.animateScrollTo(scrollState.maxValue, tween(400))
-        } else {
-            scrollState.animateScrollTo(0, tween(400))
-        }
+        scrollState.animateScrollTo(
+            value = if (imeState.value) {
+                scrollState.maxValue
+            } else {
+                0
+            },
+            animationSpec = tween(durationMillis = 400)
+        )
     }
 
-    Scaffold { innerPadding ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(scrollState, enabled = false)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(
+                    state = scrollState,
+                    enabled = false
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(0.25.dh))
+            Spacer(modifier = Modifier.height(0.20.dh))
+
+            Text(
+                text = "LogIn using existing TrueCaller account."
+            )
+
+            Spacer(modifier = Modifier.height(0.03.dh))
 
             CustomTextField(
                 value = loginViewModel.firstName,
@@ -84,8 +95,8 @@ fun LogInScreen(
                 value = loginViewModel.email,
                 onValueChange = { loginViewModel.email = it },
                 label = "Email",
-                leadingIcon = Icons.Filled.Email,
                 supportingText = "optional",
+                leadingIcon = Icons.Filled.Email,
                 isError = loginViewModel.emailError,
                 keyboardType = KeyboardType.Email
             )
@@ -98,11 +109,12 @@ fun LogInScreen(
                     loginViewModel.nextScreen(navController)
                 }
             ) {
-                Text("Next")
+                Text(
+                    text = "Next"
+                )
             }
 
             Spacer(modifier = Modifier.height(0.40.dh))
         }
     }
-
 }

@@ -3,6 +3,7 @@ package com.syntaxticsugr.callerid.ui.widgets
 import android.provider.CallLog
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,29 +18,30 @@ fun CallTypeIcon(
     duration: String,
     size: Dp
 ) {
+    val isOutgoingMissedCall = isOutgoingMissedCall(type = type, duration = duration)
+
     val iconResId = when (type) {
-        CallLog.Calls.INCOMING_TYPE -> R.drawable.baseline_call_received_24
-        CallLog.Calls.OUTGOING_TYPE -> if (isOutgoingMissedCall(type, duration)) {
+        CallLog.Calls.INCOMING_TYPE, CallLog.Calls.REJECTED_TYPE -> R.drawable.baseline_call_received_24
+        CallLog.Calls.OUTGOING_TYPE -> if (isOutgoingMissedCall) {
             R.drawable.baseline_call_missed_outgoing_24
         } else {
             R.drawable.baseline_call_made_24
         }
         CallLog.Calls.MISSED_TYPE -> R.drawable.baseline_call_missed_24
         CallLog.Calls.VOICEMAIL_TYPE -> R.drawable.baseline_voicemail_24
-        CallLog.Calls.REJECTED_TYPE -> R.drawable.baseline_call_received_24
         CallLog.Calls.BLOCKED_TYPE -> R.drawable.baseline_block_24
         CallLog.Calls.ANSWERED_EXTERNALLY_TYPE -> R.drawable.devices_other_24
         else -> R.drawable.baseline_bug_report_24
     }
 
     val tint = if (
-        type == CallLog.Calls.MISSED_TYPE ||
-        type == CallLog.Calls.REJECTED_TYPE ||
-        isOutgoingMissedCall(type, duration)
+        type == CallLog.Calls.MISSED_TYPE
+        || type == CallLog.Calls.REJECTED_TYPE
+        || isOutgoingMissedCall
     ) {
         MaterialTheme.colorScheme.error
     } else {
-        MaterialTheme.colorScheme.primary
+        LocalContentColor.current
     }
 
     Icon(

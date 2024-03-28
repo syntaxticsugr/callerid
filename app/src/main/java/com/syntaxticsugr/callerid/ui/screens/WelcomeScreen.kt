@@ -13,7 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.viewmodel.WelcomeViewModel
@@ -24,12 +28,11 @@ fun WelcomeScreen(
     navController: NavHostController,
     welcomeViewModel: WelcomeViewModel = koinViewModel()
 ) {
-
-    Scaffold { innerPadding ->
+    Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(paddingValues = paddingValues)
                 .padding(horizontal = 0.10.dw),
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.Center
@@ -37,7 +40,16 @@ fun WelcomeScreen(
             Text(
                 modifier = Modifier
                     .fillMaxWidth(),
-                text = "CallerID\n------------\nCaller Identification without the headache of a complex UI and annoying ads.",
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("CallerID")
+                    }
+                    append("\n\nCaller identification without the hassle of a complex UI or annoying ADs.")
+                },
                 textAlign = TextAlign.Start,
             )
 
@@ -49,10 +61,9 @@ fun WelcomeScreen(
                 }
             ) {
                 Text(
-                    text = "Next",
+                    text = "Next"
                 )
             }
         }
     }
-
 }

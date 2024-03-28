@@ -19,14 +19,6 @@ class PermissionsViewModel(
 
     private val appContext: Context = application.applicationContext
 
-    fun getButtonText(context: Context): String {
-        return when (PermissionsManager.arePermissionsGranted(context)) {
-            PermissionsResult.CAN_REQUEST -> "Grant"
-            PermissionsResult.ALL_GRANTED -> "Next"
-            PermissionsResult.PERMANENTLY_DENIED -> "Settings"
-        }
-    }
-
     fun openAppSettings(activity: Activity) {
         val intent = Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -37,16 +29,26 @@ class PermissionsViewModel(
     }
 
     fun nextScreen(navController: NavController) {
-        val destination = if (AuthKeyManager.getAuthKey(appContext) != null) {
-            Screens.Home.route
-        } else {
+        val authKey = AuthKeyManager.getAuthKey(appContext)
+
+        val destination = if (authKey == null) {
             Screens.LogIn.route
+        } else {
+            Screens.Home.route
         }
 
         navController.navigate(destination) {
             popUpTo(Screens.Permissions.route) {
                 inclusive = true
             }
+        }
+    }
+
+    fun getButtonText(context: Context): String {
+        return when (PermissionsManager.arePermissionsGranted(context)) {
+            PermissionsResult.CAN_REQUEST -> "Grant"
+            PermissionsResult.ALL_GRANTED -> "Next"
+            PermissionsResult.PERMANENTLY_DENIED -> "Settings"
         }
     }
 

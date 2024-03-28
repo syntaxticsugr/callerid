@@ -20,12 +20,10 @@ fun SetupNavGraph(
     navController: NavHostController,
     startDestination: String
 ) {
-
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-
         composable(route = Screens.Welcome.route) {
             WelcomeScreen(navController = navController)
         }
@@ -48,12 +46,10 @@ fun SetupNavGraph(
 
         composable(
             route = "${Screens.History.route}/{phoneNumber}",
-            arguments = listOf(navArgument("phoneNumber") { type = NavType.StringType })
+            arguments = listOf(navArgument(name = "phoneNumber") { type = NavType.StringType })
         ) { navBackStackEntry ->
             val phoneNumber = navBackStackEntry.arguments?.getString("phoneNumber")!!
-            HistoryScreen(phoneNumber = phoneNumber)
+            HistoryScreen(phoneNumber)
         }
-
     }
-
 }

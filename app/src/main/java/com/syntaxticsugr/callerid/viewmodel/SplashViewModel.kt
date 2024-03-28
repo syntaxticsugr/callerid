@@ -1,6 +1,5 @@
 package com.syntaxticsugr.callerid.viewmodel
 
-import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,11 +14,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SplashViewModel(
-    application: Application,
     private val pref: DataStorePref
 ) : ViewModel() {
-
-    private val appContext: Context = application.applicationContext
 
     val isLoading = mutableStateOf(true)
     val startDestination = mutableStateOf(Screens.Welcome.route)
@@ -31,34 +27,24 @@ class SplashViewModel(
         }
     }
 
-    private fun checkPermissions() {
-        if (PermissionsManager.arePermissionsGranted(appContext) != PermissionsResult.ALL_GRANTED) {
-            startDestination.value = Screens.Permissions.route
-        }
-    }
-
-    private fun setStartDestinationAndRemoveSplash() {
+    fun setStartDestination(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val showWelcomePage = pref.readBool(key = "showWelcomePage", default = true)
+            val arePermissionsGranted = PermissionsManager.arePermissionsGranted(context)
+            val authKey = AuthKeyManager.getAuthKey(context)
 
-            if (showWelcomePage) {
-                startDestination.value = Screens.Welcome.route
+            startDestination.value = if (showWelcomePage) {
+                Screens.Welcome.route
+            } else if (arePermissionsGranted != PermissionsResult.ALL_GRANTED) {
+                Screens.Permissions.route
+            } else if (authKey == null) {
+                Screens.LogIn.route
             } else {
-                if (AuthKeyManager.getAuthKey(appContext) != null) {
-                    startDestination.value = Screens.Home.route
-                } else {
-                    startDestination.value = Screens.LogIn.route
-                }
-
-                checkPermissions()
+                Screens.Home.route
             }
 
             removeSplash()
         }
-    }
-
-    init {
-        setStartDestinationAndRemoveSplash()
     }
 
 }

@@ -7,7 +7,6 @@ import io.realm.kotlin.ext.query
 import io.realm.kotlin.query.RealmResults
 
 class RealmDB {
-
     private val realm = CallerID.realm
 
     suspend fun addPhoneNumberInfo(phoneNumber: String, info: String) {
@@ -22,7 +21,7 @@ class RealmDB {
     }
 
     fun getPhoneNumberInfo(phoneNumber: String): RealmResults<PhoneNumberInfo> {
-        return realm.query<PhoneNumberInfo>("phoneNumber == $0", phoneNumber).find()
+        val query = realm.query<PhoneNumberInfo>("phoneNumber == $0", phoneNumber)
+        return query.find()
     }
-
 }
