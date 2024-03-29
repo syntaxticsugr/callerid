@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,8 +38,12 @@ fun LogInScreen(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val imeState = rememberImeState()
-
+    val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
+
+    if (!imeState.value) {
+        focusManager.clearFocus()
+    }
 
     LaunchedEffect(imeState.value) {
         scrollState.animateScrollTo(
@@ -69,20 +74,35 @@ fun LogInScreen(
 
             CustomTextField(
                 value = loginViewModel.firstName,
-                onValueChange = { loginViewModel.firstName = it },
+                onValueChange = { value ->
+                    loginViewModel.firstName = value
+                    if (loginViewModel.firstNameError) {
+                        loginViewModel.firstNameError = false
+                    }
+                },
                 label = "First Name",
                 leadingIcon = Icons.Filled.Person,
                 isError = loginViewModel.firstNameError
             )
             CustomTextField(
                 value = loginViewModel.lastName,
-                onValueChange = { loginViewModel.lastName = it },
+                onValueChange = { value ->
+                    loginViewModel.lastName = value
+                    if (loginViewModel.lastNameError) {
+                        loginViewModel.lastNameError = false
+                    }
+                },
                 label = "Last Name",
                 isError = loginViewModel.lastNameError
             )
             CustomTextField(
                 value = loginViewModel.phoneNumber,
-                onValueChange = { loginViewModel.phoneNumber = it },
+                onValueChange = { value ->
+                    loginViewModel.phoneNumber = value
+                    if (loginViewModel.phoneNumberError) {
+                        loginViewModel.phoneNumberError = false
+                    }
+                },
                 label = "Phone Number",
                 prefix = "+",
                 leadingIcon = Icons.Filled.Phone,
@@ -91,7 +111,12 @@ fun LogInScreen(
             )
             CustomTextField(
                 value = loginViewModel.email,
-                onValueChange = { loginViewModel.email = it },
+                onValueChange = { value ->
+                    loginViewModel.email = value
+                    if (loginViewModel.emailError) {
+                        loginViewModel.emailError = false
+                    }
+                },
                 label = "Email",
                 supportingText = "optional",
                 leadingIcon = Icons.Filled.Email,
@@ -112,7 +137,7 @@ fun LogInScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(0.60.dh))
+            Spacer(modifier = Modifier.height(0.55.dh))
         }
     }
 }

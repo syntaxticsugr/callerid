@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.slaviboy.composeunits.dw
 
@@ -79,7 +80,10 @@ fun CustomTextField(
             },
             isError = isError,
             keyboardOptions = if (keyboardType != null) {
-                KeyboardOptions(keyboardType = keyboardType)
+                KeyboardOptions(
+                    keyboardType = keyboardType,
+                    imeAction = ImeAction.Done
+                )
             } else {
                 KeyboardOptions.Default
             }

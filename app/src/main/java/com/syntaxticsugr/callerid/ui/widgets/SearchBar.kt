@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,12 +22,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
+import com.syntaxticsugr.callerid.utils.rememberImeState
 import com.syntaxticsugr.callerid.viewmodel.SearchBarViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -34,10 +40,31 @@ import org.koin.androidx.compose.koinViewModel
 fun SearchBar(
     searchBarViewModel: SearchBarViewModel = koinViewModel()
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
+    val imeState = rememberImeState()
+
+    if (!imeState.value) {
+        focusManager.clearFocus()
+    }
 
     if (searchBarViewModel.showSearchResultDialog) {
-        searchBarViewModel.ShowSearchDialog()
+        SearchResultDialog(
+            info = searchBarViewModel.info,
+            onDismissRequest = {
+                searchBarViewModel.showSearchResultDialog = false
+            }
+        )
+    }
+
+    fun onSearchButtonClicked() {
+        if (!isFocused) {
+            focusRequester.requestFocus()
+        } else {
+            focusRequester.freeFocus()
+            searchBarViewModel.searchPhoneNumber()
+        }
     }
 
     Card(
@@ -52,6 +79,7 @@ fun SearchBar(
         ) {
             TextField(
                 modifier = Modifier
+                    .focusRequester(focusRequester)
                     .onFocusChanged { focusState ->
                         isFocused = focusState.isFocused
                     }
@@ -59,10 +87,20 @@ fun SearchBar(
                 value = if (isFocused) {
                     searchBarViewModel.phoneNumber
                 } else {
-                    "Search Phone Number"
+                    ""
                 },
-                onValueChange = { searchBarViewModel.phoneNumber = it },
+                onValueChange = { value ->
+                    searchBarViewModel.phoneNumber = value
+                    if (searchBarViewModel.phoneNumberError) {
+                        searchBarViewModel.phoneNumberError = false
+                    }
+                },
                 singleLine = true,
+                placeholder = {
+                    Text(
+                        text = "Search Phone Number"
+                    )
+                },
                 prefix = if (isFocused) {
                     {
                         Text(
@@ -78,7 +116,13 @@ fun SearchBar(
                     null
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onSearchButtonClicked()
+                    }
                 ),
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = if (searchBarViewModel.phoneNumberError) {
@@ -94,7 +138,7 @@ fun SearchBar(
 
             IconButton(
                 onClick = {
-                    searchBarViewModel.searchPhoneNumber()
+                    onSearchButtonClicked()
                 }
             ) {
                 val size = 0.06.dw
