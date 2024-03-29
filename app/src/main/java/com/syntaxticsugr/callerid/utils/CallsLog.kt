@@ -3,7 +3,6 @@ package com.syntaxticsugr.callerid.utils
 import android.content.Context
 import android.provider.CallLog
 import com.syntaxticsugr.callerid.datamodel.CallModel
-import com.syntaxticsugr.callerid.datastore.DataStorePref
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,13 +49,9 @@ fun getCallsLog(context: Context): Map<String, Map<String, Map<String, CallModel
 
             if (!number.startsWith("+")) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    val defaultDialingCode =
-                        DataStorePref(context).readString(
-                            key = "defaultDialingCode",
-                            default = ""
-                        )
+                    val dialingCode = getSavedDialingCode(context)
 
-                    number = "${defaultDialingCode}${number}"
+                    number = "+${dialingCode}${number}"
                 }
             }
 
@@ -122,13 +117,9 @@ fun getCallsLog(context: Context, phoneNumber: String): List<CallModel> {
 
             if (!number.startsWith("+")) {
                 CoroutineScope(Dispatchers.IO).launch {
-                    val defaultDialingCode =
-                        DataStorePref(context).readString(
-                            key = "defaultDialingCode",
-                            default = ""
-                        )
+                    val dialingCode = getSavedDialingCode(context)
 
-                    number = "${defaultDialingCode}${number}"
+                    number = "+${dialingCode}${number}"
                 }
             }
 

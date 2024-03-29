@@ -1,13 +1,13 @@
 package com.syntaxticsugr.callerid.ui.widgets
 
-import android.content.Context
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,24 +25,20 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
-import com.syntaxticsugr.callerid.utils.PhoneNumberInfoHelper
-import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
-import com.syntaxticsugr.callerid.viewmodel.HomeViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.syntaxticsugr.callerid.viewmodel.SearchBarViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SearchBar(
-    context: Context,
-    homeViewModel: HomeViewModel
+    searchBarViewModel: SearchBarViewModel = koinViewModel()
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
-    var name by remember { mutableStateOf("") }
+    if (searchBarViewModel.showSearchResultDialog) {
+        searchBarViewModel.ShowSearchDialog()
+    }
 
     Card(
         modifier = Modifier
@@ -60,30 +56,36 @@ fun SearchBar(
                         isFocused = focusState.isFocused
                     }
                     .weight(1f),
-                value = homeViewModel.searchNumber,
-                onValueChange = { homeViewModel.searchNumber = it },
-                singleLine = true,
-                placeholder = if (!isFocused) {
-                    {
-                        Text(text = "Search Phone Number")
-                    }
+                value = if (isFocused) {
+                    searchBarViewModel.phoneNumber
                 } else {
-                    null
+                    "Search Phone Number"
                 },
+                onValueChange = { searchBarViewModel.phoneNumber = it },
+                singleLine = true,
                 prefix = if (isFocused) {
                     {
                         Text(
-                            text = "+"
+                            text = "+",
+                            color = if (searchBarViewModel.phoneNumberError) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                Color.Unspecified
+                            }
                         )
                     }
                 } else {
                     null
                 },
-                isError = homeViewModel.searchNumberError,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
                 ),
                 colors = TextFieldDefaults.colors(
+                    focusedTextColor = if (searchBarViewModel.phoneNumberError) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        Color.Unspecified
+                    },
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent
@@ -92,33 +94,25 @@ fun SearchBar(
 
             IconButton(
                 onClick = {
-                    if (!isValidPhoneNumber(("+${homeViewModel.searchNumber.trim()}"))) {
-                        homeViewModel.searchNumberError = true
-                    } else {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            name = PhoneNumberInfoHelper.getName(
-                                context,
-                                "+${homeViewModel.searchNumber.trim()}"
-                            )
-                        }
-                    }
+                    searchBarViewModel.searchPhoneNumber()
                 }
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_search_24),
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = null
-                )
-            }
-        }
+                val size = 0.06.dw
 
-        if (name.isNotEmpty()) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                text = name,
-                textAlign = TextAlign.Center
-            )
+                if (searchBarViewModel.searching) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(size),
+                        strokeWidth = size / 10
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_search_24),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = null
+                    )
+                }
+            }
         }
     }
 }

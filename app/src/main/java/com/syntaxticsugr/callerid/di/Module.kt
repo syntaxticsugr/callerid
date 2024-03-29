@@ -4,6 +4,7 @@ import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.viewmodel.HomeViewModel
 import com.syntaxticsugr.callerid.viewmodel.LoginViewModel
 import com.syntaxticsugr.callerid.viewmodel.PermissionsViewModel
+import com.syntaxticsugr.callerid.viewmodel.SearchBarViewModel
 import com.syntaxticsugr.callerid.viewmodel.SplashViewModel
 import com.syntaxticsugr.callerid.viewmodel.VerifyViewModel
 import com.syntaxticsugr.callerid.viewmodel.WelcomeViewModel
@@ -40,6 +41,10 @@ val calleridModule = module {
 
     viewModel<HomeViewModel> {
         HomeViewModel()
+    }
+
+    viewModel<SearchBarViewModel> {
+        SearchBarViewModel(androidApplication())
     }
 
 }

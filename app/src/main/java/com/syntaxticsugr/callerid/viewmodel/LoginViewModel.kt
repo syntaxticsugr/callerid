@@ -33,16 +33,12 @@ class LoginViewModel(
     var phoneNumberError by mutableStateOf(false)
     var emailError by mutableStateOf(false)
 
-    private fun prefixU002B(str: String): String {
-        return "+$str"
-    }
-
     private fun formattedEmail(): String {
         return email.trim()
     }
 
     private fun formattedPhoneNumber(): String {
-        return prefixU002B(phoneNumber.filterNot { it.isWhitespace() })
+        return "+${phoneNumber.filterNot { it.isWhitespace() }}"
     }
 
     private fun saveUserCreds() {
@@ -53,10 +49,7 @@ class LoginViewModel(
             pref.writeString(key = "lastName", value = lastName.trim())
             pref.writeString(key = "phoneNumber", value = formattedPhoneNumber())
             pref.writeString(key = "email", value = formattedEmail())
-            pref.writeString(
-                key = "defaultDialingCode",
-                value = prefixU002B(dialingCode.toString())
-            )
+            pref.writeString(key = "dialingCode", value = dialingCode.toString())
         }
     }
 

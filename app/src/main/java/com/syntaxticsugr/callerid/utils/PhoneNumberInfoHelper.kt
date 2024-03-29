@@ -4,27 +4,33 @@ import android.content.Context
 import com.syntaxticsugr.callerid.realm.RealmDB
 import com.syntaxticsugr.callerid.realm.objects.PhoneNumberInfo
 import com.syntaxticsugr.tcaller.utils.toJson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-
+import org.json.JSONObject
 
 object PhoneNumberInfoHelper {
 
-    suspend fun getName(context: Context, phoneNumber: String): String {
-        return withContext(Dispatchers.IO) {
-            var result = RealmDB().getPhoneNumberInfo(phoneNumber).firstOrNull()
+    suspend fun getInfo(context: Context, phoneNumber: String): JSONObject {
+        var result = RealmDB.getPhoneNumberInfo(phoneNumber).firstOrNull()
 
-            if (result == null) {
-                result = PhoneNumberInfo().apply {
-                    this.phoneNumber = phoneNumber
-                    this.info = searchOnTcaller(context, phoneNumber)
-                }
+        if (result == null) {
+            val phoneNumberInfo = searchOnTcaller(
+                context = context,
+                phoneNumber = phoneNumber
+            )
+
+            RealmDB.addPhoneNumberInfo(phoneNumber = phoneNumber, info = phoneNumberInfo)
+
+            result = PhoneNumberInfo().apply {
+                this.phoneNumber = phoneNumber
+                this.info = phoneNumberInfo
             }
-
-            val resultJson = result.info.toJson()
-
-            resultJson.getString("name")
         }
+
+        return result.info.toJson()
+    }
+
+    suspend fun getName(context: Context, phoneNumber: String): String {
+        val info = getInfo(context, phoneNumber)
+        return info.getString("name")
     }
 
 }

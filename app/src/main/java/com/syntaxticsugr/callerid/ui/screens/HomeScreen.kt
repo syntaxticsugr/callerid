@@ -74,7 +74,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SearchBar(context = context, homeViewModel = homeViewModel)
+                SearchBar()
 
                 IconButton(
                     onClick = {
