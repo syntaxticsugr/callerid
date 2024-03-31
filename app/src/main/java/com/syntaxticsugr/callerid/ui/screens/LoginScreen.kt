@@ -76,9 +76,7 @@ fun LogInScreen(
                 value = loginViewModel.firstName,
                 onValueChange = { value ->
                     loginViewModel.firstName = value
-                    if (loginViewModel.firstNameError) {
-                        loginViewModel.firstNameError = false
-                    }
+                    loginViewModel.firstNameError = false
                 },
                 label = "First Name",
                 leadingIcon = Icons.Filled.Person,
@@ -88,9 +86,7 @@ fun LogInScreen(
                 value = loginViewModel.lastName,
                 onValueChange = { value ->
                     loginViewModel.lastName = value
-                    if (loginViewModel.lastNameError) {
-                        loginViewModel.lastNameError = false
-                    }
+                    loginViewModel.lastNameError = false
                 },
                 label = "Last Name",
                 isError = loginViewModel.lastNameError
@@ -99,9 +95,7 @@ fun LogInScreen(
                 value = loginViewModel.phoneNumber,
                 onValueChange = { value ->
                     loginViewModel.phoneNumber = value
-                    if (loginViewModel.phoneNumberError) {
-                        loginViewModel.phoneNumberError = false
-                    }
+                    loginViewModel.phoneNumberError = false
                 },
                 label = "Phone Number",
                 prefix = "+",
@@ -113,9 +107,7 @@ fun LogInScreen(
                 value = loginViewModel.email,
                 onValueChange = { value ->
                     loginViewModel.email = value
-                    if (loginViewModel.emailError) {
-                        loginViewModel.emailError = false
-                    }
+                    loginViewModel.emailError = false
                 },
                 label = "Email",
                 supportingText = "optional",

@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dw
@@ -49,8 +48,7 @@ fun WelcomeScreen(
                         append("CallerID")
                     }
                     append("\n\nCaller identification without the hassle of a complex UI or annoying ADs.")
-                },
-                textAlign = TextAlign.Start,
+                }
             )
 
             Spacer(modifier = Modifier.height(0.10.dw))

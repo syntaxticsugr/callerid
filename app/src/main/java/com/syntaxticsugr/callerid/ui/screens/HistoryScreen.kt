@@ -30,7 +30,7 @@ import com.slaviboy.composeunits.sw
 import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.ui.widgets.CallerCard
 import com.syntaxticsugr.callerid.ui.widgets.ProfileAvatar
-import com.syntaxticsugr.callerid.utils.PhoneNumberInfoHelper
+import com.syntaxticsugr.callerid.utils.PhoneNumberInfo
 import com.syntaxticsugr.callerid.utils.getCallsLog
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
 import com.syntaxticsugr.callerid.utils.makePhoneCall
@@ -47,7 +47,7 @@ fun HistoryScreen(
 
     if (isValidPhoneNumber && name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
-            name = PhoneNumberInfoHelper.getName(context, calls[0].phoneNumber)
+            name = PhoneNumberInfo.getName(context = context, phoneNumber = calls[0].phoneNumber)
         }
     }
 

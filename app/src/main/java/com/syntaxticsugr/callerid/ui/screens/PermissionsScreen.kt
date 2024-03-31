@@ -23,7 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dw
@@ -37,6 +40,7 @@ fun PermissionsScreen(
     permissionViewModel: PermissionsViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
+
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
 
@@ -65,7 +69,13 @@ fun PermissionsScreen(
         ) {
             Text(
                 text = buildAnnotatedString {
-                    append("CallerID needs the following permissions to work.")
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("CallerID need the following permissions to work.")
+                    }
                     append("\n\nREAD_CALL_LOGS")
                     append("\nTo display call logs within the App.")
                     append("\n\nCALL_PHONE")

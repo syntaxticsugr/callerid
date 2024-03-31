@@ -20,11 +20,9 @@ class SplashViewModel(
     val isLoading = mutableStateOf(true)
     val startDestination = mutableStateOf(Screens.Welcome.route)
 
-    private fun removeSplash() {
-        viewModelScope.launch {
-            delay(500)
-            isLoading.value = false
-        }
+    private suspend fun removeSplash() {
+        delay(500)
+        isLoading.value = false
     }
 
     fun setStartDestination(context: Context) {

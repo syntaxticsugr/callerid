@@ -2,11 +2,11 @@ package com.syntaxticsugr.callerid.utils
 
 import android.content.Context
 import com.syntaxticsugr.callerid.realm.RealmDB
-import com.syntaxticsugr.callerid.realm.objects.PhoneNumberInfo
+import com.syntaxticsugr.callerid.realm.objects.PhoneNumberInfoObject
 import com.syntaxticsugr.tcaller.utils.toJson
 import org.json.JSONObject
 
-object PhoneNumberInfoHelper {
+object PhoneNumberInfo {
 
     suspend fun getInfo(context: Context, phoneNumber: String): JSONObject {
         var result = RealmDB.getPhoneNumberInfo(phoneNumber).firstOrNull()
@@ -19,7 +19,7 @@ object PhoneNumberInfoHelper {
 
             RealmDB.addPhoneNumberInfo(phoneNumber = phoneNumber, info = phoneNumberInfo)
 
-            result = PhoneNumberInfo().apply {
+            result = PhoneNumberInfoObject().apply {
                 this.phoneNumber = phoneNumber
                 this.info = phoneNumberInfo
             }
@@ -29,7 +29,8 @@ object PhoneNumberInfoHelper {
     }
 
     suspend fun getName(context: Context, phoneNumber: String): String {
-        val info = getInfo(context, phoneNumber)
+        val info = getInfo(context = context, phoneNumber = phoneNumber)
+
         return info.getString("name")
     }
 

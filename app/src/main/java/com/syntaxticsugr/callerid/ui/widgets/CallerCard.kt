@@ -1,6 +1,5 @@
 package com.syntaxticsugr.callerid.ui.widgets
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,34 +24,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.datamodel.CallModel
 import com.syntaxticsugr.callerid.navigation.Screens
-import com.syntaxticsugr.callerid.utils.PhoneNumberInfoHelper
+import com.syntaxticsugr.callerid.utils.PhoneNumberInfo
 import com.syntaxticsugr.callerid.utils.callTypeString
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
 import com.syntaxticsugr.callerid.utils.makePhoneCall
 import com.syntaxticsugr.callerid.utils.savePhoneNumber
-import com.syntaxticsugr.callerid.utils.sendMessage
 
 @Composable
 fun CallerCard(
-    context: Context,
     navController: NavController,
     call: CallModel
 ) {
+    val context = LocalContext.current
+
     var expanded by remember { mutableStateOf(false) }
+    val showPhoneNumberInfoDialog = remember { mutableStateOf(false) }
 
     val isValidPhoneNumber = isValidPhoneNumber(call.phoneNumber)
     var name by remember { mutableStateOf(call.name) }
 
     if (isValidPhoneNumber && name.isNullOrBlank()) {
         LaunchedEffect(Unit) {
-            name = PhoneNumberInfoHelper.getName(context = context, phoneNumber = call.phoneNumber)
+            name = PhoneNumberInfo.getName(context = context, phoneNumber = call.phoneNumber)
         }
+    }
+
+    if (showPhoneNumberInfoDialog.value) {
+        PhoneNumberInfoDialog(
+            phoneNumber = call.phoneNumber,
+            onDismissRequest = {
+                showPhoneNumberInfoDialog.value = false
+            }
+        )
     }
 
     Column(
@@ -154,18 +164,6 @@ fun CallerCard(
                 ) {
                     IconButton(
                         onClick = {
-                            sendMessage(context = context, phoneNumber = call.phoneNumber)
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_message_24),
-                            tint = MaterialTheme.colorScheme.primary,
-                            contentDescription = null
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {
                             navController.navigate("${Screens.History.route}/${call.phoneNumber}")
                         }
                     ) {
@@ -187,6 +185,18 @@ fun CallerCard(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_person_add_alt_1_24),
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = null
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            showPhoneNumberInfoDialog.value = true
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_info_outline_24),
                             tint = MaterialTheme.colorScheme.primary,
                             contentDescription = null
                         )

@@ -11,6 +11,7 @@ import java.io.IOException
 private val Context.dataStore by preferencesDataStore(name = "callerid")
 
 class DataStorePref(context: Context) {
+
     private val dataStore = context.dataStore
 
     suspend fun writeBool(key: String, value: Boolean) {

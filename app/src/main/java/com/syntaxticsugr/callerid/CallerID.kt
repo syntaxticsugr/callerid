@@ -2,7 +2,7 @@ package com.syntaxticsugr.callerid
 
 import android.app.Application
 import com.syntaxticsugr.callerid.di.calleridModule
-import com.syntaxticsugr.callerid.realm.objects.PhoneNumberInfo
+import com.syntaxticsugr.callerid.realm.objects.PhoneNumberInfoObject
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import org.koin.android.ext.koin.androidContext
@@ -24,7 +24,7 @@ class CallerID : Application() {
 
         realm = Realm.open(
             configuration = RealmConfiguration.create(
-                schema = setOf(PhoneNumberInfo::class)
+                schema = setOf(PhoneNumberInfoObject::class)
             )
         )
     }

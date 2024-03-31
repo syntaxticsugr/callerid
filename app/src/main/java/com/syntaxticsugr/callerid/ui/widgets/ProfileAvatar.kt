@@ -1,8 +1,10 @@
 package com.syntaxticsugr.callerid.ui.widgets
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
@@ -18,13 +20,15 @@ import androidx.compose.ui.unit.Dp
 fun ProfileAvatar(
     isValidPhoneNumber: Boolean,
     name: String?,
-    size: Dp
+    size: Dp,
+    backgroundColor: Color = Color.Transparent
 ) {
     val initial = if (name.isNullOrBlank()) "?" else name.take(1).uppercase()
 
     Box(
         modifier = Modifier
-            .size(size),
+            .size(size)
+            .background(color = backgroundColor, shape = CircleShape),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -41,7 +45,7 @@ fun ProfileAvatar(
             CircularProgressIndicator(
                 modifier = Modifier
                     .fillMaxSize(),
-                strokeWidth = size / 20,
+                strokeWidth = size / 20
             )
         } else {
             CircularProgressIndicator(

@@ -1,14 +1,15 @@
 package com.syntaxticsugr.callerid.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.app.Application
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 
-class HomeViewModel : ViewModel() {
-    var searchNumber = ""
-    var searchNumberError by mutableStateOf(false)
+class HomeViewModel(
+    application: Application
+) : ViewModel() {
+
+    private val appContext: Context = application.applicationContext
 
     fun openProfilePage(navController: NavController) {
         /* TODO */

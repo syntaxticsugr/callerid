@@ -40,7 +40,7 @@ val calleridModule = module {
     }
 
     viewModel<HomeViewModel> {
-        HomeViewModel()
+        HomeViewModel(androidApplication())
     }
 
     viewModel<SearchBarViewModel> {

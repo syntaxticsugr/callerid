@@ -16,6 +16,7 @@ import com.syntaxticsugr.tcaller.enums.VerifyResult
 import com.syntaxticsugr.tcaller.tCallerApiFeatures.requestOtp
 import com.syntaxticsugr.tcaller.tCallerApiFeatures.verifyOtp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class VerifyViewModel(
@@ -106,18 +107,19 @@ class VerifyViewModel(
         }
     }
 
-    private fun getUserCreds() {
-        viewModelScope.launch(Dispatchers.IO) {
-            firstname = pref.readString(key = "firstName", default = "")
-            lastName = pref.readString(key = "lastName", default = "")
-            phoneNumber = pref.readString(key = "phoneNumber", default = "")
-            email = pref.readString(key = "email", default = "")
-        }
+    private suspend fun getUserCreds() {
+        firstname = pref.readString(key = "firstName", default = "")
+        lastName = pref.readString(key = "lastName", default = "")
+        phoneNumber = pref.readString(key = "phoneNumber", default = "")
+        email = pref.readString(key = "email", default = "")
     }
 
     private fun getUserCredsAndRequestOtp() {
-        getUserCreds()
-        requestOtp()
+        viewModelScope.launch {
+            getUserCreds()
+            delay(1000)
+            requestOtp()
+        }
     }
 
     init {

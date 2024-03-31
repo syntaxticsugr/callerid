@@ -49,11 +49,11 @@ fun SearchBar(
         focusManager.clearFocus()
     }
 
-    if (searchBarViewModel.showSearchResultDialog) {
-        SearchResultDialog(
-            info = searchBarViewModel.info,
+    if (searchBarViewModel.showPhoneNumberInfoDialog) {
+        PhoneNumberInfoDialog(
+            phoneNumber = remember { searchBarViewModel.formattedPhoneNumber() },
             onDismissRequest = {
-                searchBarViewModel.showSearchResultDialog = false
+                searchBarViewModel.showPhoneNumberInfoDialog = false
             }
         )
     }

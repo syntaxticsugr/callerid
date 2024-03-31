@@ -7,12 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.syntaxticsugr.callerid.utils.PhoneNumberInfoHelper
+import com.syntaxticsugr.callerid.utils.PhoneNumberInfo
 import com.syntaxticsugr.callerid.utils.getSavedDialingCode
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class SearchBarViewModel(
     application: Application
@@ -21,15 +20,14 @@ class SearchBarViewModel(
     private val appContext: Context = application.applicationContext
 
     private lateinit var savedDialingCode: String
-    lateinit var info: JSONObject
 
     var phoneNumber by mutableStateOf("")
     var phoneNumberError by mutableStateOf(false)
 
     var searching by mutableStateOf(false)
-    var showSearchResultDialog by mutableStateOf(false)
+    var showPhoneNumberInfoDialog by mutableStateOf(false)
 
-    private fun formattedPhoneNumber(): String {
+    fun formattedPhoneNumber(): String {
         return "+${(phoneNumber.filterNot { it.isWhitespace() })}"
     }
 
@@ -37,17 +35,17 @@ class SearchBarViewModel(
         if (!isValidPhoneNumber(formattedPhoneNumber())) {
             phoneNumberError = true
         } else {
-            phoneNumberError = false
             searching = true
 
             viewModelScope.launch {
-                info = PhoneNumberInfoHelper.getInfo(
+                PhoneNumberInfo.getInfo(
                     context = appContext,
                     phoneNumber = formattedPhoneNumber()
                 )
 
                 searching = false
-                showSearchResultDialog = true
+                showPhoneNumberInfoDialog = true
+
                 delay(1000)
                 phoneNumber = savedDialingCode
             }

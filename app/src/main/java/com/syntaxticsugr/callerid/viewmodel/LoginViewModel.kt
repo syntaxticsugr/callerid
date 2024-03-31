@@ -54,11 +54,6 @@ class LoginViewModel(
     }
 
     private fun validateFields(): Boolean {
-        firstNameError = false
-        lastNameError = false
-        phoneNumberError = false
-        emailError = false
-
         var isValid = true
 
         if (firstName.isBlank()) {
