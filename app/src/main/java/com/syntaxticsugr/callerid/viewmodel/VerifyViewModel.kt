@@ -16,7 +16,7 @@ import com.syntaxticsugr.tcaller.enums.VerifyResult
 import com.syntaxticsugr.tcaller.tCallerApiFeatures.requestOtp
 import com.syntaxticsugr.tcaller.tCallerApiFeatures.verifyOtp
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class VerifyViewModel(
@@ -26,10 +26,10 @@ class VerifyViewModel(
 
     private val appContext: Context = application.applicationContext
 
-    lateinit var firstname: String
-    lateinit var lastName: String
-    lateinit var phoneNumber: String
-    lateinit var email: String
+    var firstname by mutableStateOf("")
+    var lastName by mutableStateOf("")
+    var phoneNumber by mutableStateOf("")
+    var email by mutableStateOf("")
     private lateinit var requestId: String
     lateinit var errorMessage: String
 
@@ -82,42 +82,43 @@ class VerifyViewModel(
         }
     }
 
-    private fun requestOtp() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val (result, resultJson) = TcallerApiClient.requestOtp(
-                context = appContext,
-                phoneNumber = phoneNumber
-            )
+    private suspend fun requestOtp() {
+        val (result, resultJson) = TcallerApiClient.requestOtp(
+            context = appContext,
+            phoneNumber = phoneNumber
+        )
 
-            when (result) {
-                RequestResult.OTP_SENT -> {
-                    requestId = resultJson.getString("requestId")
-                    isOtpSent = true
-                }
+        when (result) {
+            RequestResult.OTP_SENT -> {
+                requestId = resultJson.getString("requestId")
+                isOtpSent = true
+            }
 
-                RequestResult.ALREADY_VERIFIED -> {
-                    isVerificationSuccessful = true
-                }
+            RequestResult.ALREADY_VERIFIED -> {
+                isVerificationSuccessful = true
+            }
 
-                else -> {
-                    errorMessage = "${resultJson.getString("message")} :("
-                    unexpectedError = true
-                }
+            else -> {
+                errorMessage = "${resultJson.getString("message")} :("
+                unexpectedError = true
             }
         }
     }
 
-    private suspend fun getUserCreds() {
-        firstname = pref.readString(key = "firstName", default = "")
-        lastName = pref.readString(key = "lastName", default = "")
-        phoneNumber = pref.readString(key = "phoneNumber", default = "")
-        email = pref.readString(key = "email", default = "")
+    private suspend fun getUserCreds(): Job {
+        return viewModelScope.launch(Dispatchers.Main) {
+            firstname = pref.readString(key = "firstName", default = "")
+            lastName = pref.readString(key = "lastName", default = "")
+            phoneNumber = pref.readString(key = "phoneNumber", default = "")
+            email = pref.readString(key = "email", default = "")
+        }
     }
 
     private fun getUserCredsAndRequestOtp() {
         viewModelScope.launch {
-            getUserCreds()
-            delay(1000)
+            val job = getUserCreds()
+            job.join()
+
             requestOtp()
         }
     }

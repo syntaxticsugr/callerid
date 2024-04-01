@@ -14,6 +14,7 @@ import com.syntaxticsugr.callerid.utils.isValidEmail
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
 import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
@@ -41,10 +42,10 @@ class LoginViewModel(
         return "+${phoneNumber.filterNot { it.isWhitespace() }}"
     }
 
-    private fun saveUserCreds() {
+    private fun saveUserCreds(): Job {
         val dialingCode = getDialingCodeFromPhoneNumber(formattedPhoneNumber())
 
-        viewModelScope.launch(Dispatchers.IO) {
+        return viewModelScope.launch(Dispatchers.IO) {
             pref.writeString(key = "firstName", value = firstName.trim())
             pref.writeString(key = "lastName", value = lastName.trim())
             pref.writeString(key = "phoneNumber", value = formattedPhoneNumber())
@@ -77,12 +78,15 @@ class LoginViewModel(
     }
 
     fun nextScreen(navController: NavController) {
-        if (validateFields()) {
-            saveUserCreds()
+        viewModelScope.launch {
+            if (validateFields()) {
+                val job = saveUserCreds()
+                job.join()
 
-            navController.navigate(Screens.Verify.route) {
-                popUpTo(Screens.LogIn.route) {
-                    inclusive = false
+                navController.navigate(Screens.Verify.route) {
+                    popUpTo(Screens.LogIn.route) {
+                        inclusive = false
+                    }
                 }
             }
         }

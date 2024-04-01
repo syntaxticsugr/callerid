@@ -7,7 +7,6 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.slaviboy.composeunits.initSize
@@ -23,10 +22,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val splashViewModel = getViewModel<SplashViewModel>()
-        splashViewModel.setStartDestination(this)
+        splashViewModel.setStartDestinationAndRemoveSplash(this)
 
         installSplashScreen().setKeepOnScreenCondition {
-            splashViewModel.isLoading.value
+            splashViewModel.isLoading
         }
 
         enableEdgeToEdge(
@@ -45,8 +44,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             CallerIDTheme {
                 val navController = rememberNavController()
-                val startDestination by splashViewModel.startDestination
-                SetupNavGraph(navController = navController, startDestination = startDestination)
+                SetupNavGraph(
+                    navController = navController,
+                    startDestination = splashViewModel.startDestination
+                )
             }
         }
     }
