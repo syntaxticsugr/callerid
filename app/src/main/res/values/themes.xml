@@ -4,9 +4,8 @@
     <style name="Theme.CallerID" parent="android:Theme.Material.NoActionBar" />
 
     <style name="Theme.CallerIDSplashTheme" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#FFFFFF</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
+        <item name="windowSplashScreenBackground">@android:color/white</item>
         <item name="postSplashScreenTheme">@style/Theme.CallerID</item>
     </style>
-
 </resources>

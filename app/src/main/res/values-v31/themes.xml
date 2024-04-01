@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.CallerID" parent="android:Theme.Material.NoActionBar" />
-
     <style name="Theme.CallerIDSplashTheme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
-        <item name="windowSplashScreenBackground">@android:color/black</item>
         <item name="postSplashScreenTheme">@style/Theme.CallerID</item>
     </style>
 </resources>
