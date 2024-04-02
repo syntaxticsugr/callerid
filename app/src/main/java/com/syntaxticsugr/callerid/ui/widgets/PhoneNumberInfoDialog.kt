@@ -33,12 +33,12 @@ fun PhoneNumberInfoDialog(
 ) {
     val context = LocalContext.current
 
-    var info: JSONObject
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var spamReports by remember { mutableStateOf(0) }
-    var city by remember { mutableStateOf("") }
-    var countryCode by remember { mutableStateOf("") }
+    var info: JSONObject?
+    var name by remember { mutableStateOf<String?>(null) }
+    var email by remember { mutableStateOf<String?>(null) }
+    var city by remember { mutableStateOf<String?>(null) }
+    var countryCode by remember { mutableStateOf<String?>(null) }
+    var spamReports by remember { mutableStateOf<Int?>(null) }
 
     Dialog(
         onDismissRequest = {
@@ -47,21 +47,16 @@ fun PhoneNumberInfoDialog(
     ) {
         LaunchedEffect(phoneNumber) {
             info = PhoneNumberInfo.getInfo(context = context, phoneNumber = phoneNumber)
-            val internetAddresses = info.getJSONArray("internetAddresses")
-            val address = info.getJSONArray("addresses").getJSONObject(0)
 
-            name = info.getString("name")
-            if (internetAddresses.length() >= 1) {
-                email = internetAddresses.getJSONObject(0).getString("id")
-            }
-            if (info.has("spamInfo")) {
-                val spamInfo = info.getJSONObject("spamInfo")
-                if (spamInfo.has("spamStats")) {
-                    spamReports = spamInfo.getJSONObject("spamStats").getInt("numReports")
-                }
-            }
-            city = address.getString("city")
-            countryCode = address.getString("countryCode")
+            val internetAddresses = info?.optJSONArray("internetAddresses")?.optJSONObject(0)
+            val address = info?.optJSONArray("addresses")?.optJSONObject(0)
+            val spamInfo = info?.optJSONObject("spamInfo")?.optJSONObject("spamStats")
+
+            name = info?.optString("name")
+            email = internetAddresses?.optString("id")
+            city = address?.optString("city")
+            countryCode = address?.optString("countryCode")
+            spamReports = spamInfo?.optInt("numReports")
         }
 
         Box(
@@ -82,15 +77,19 @@ fun PhoneNumberInfoDialog(
                             .fillMaxWidth()
                             .padding(vertical = 0.02.dw),
                         text = buildAnnotatedString {
-                            append(name)
+                            if (!name.isNullOrBlank()) {
+                                append(name)
+                            }
                             append("\n$phoneNumber")
-                            if (email.isNotBlank()) {
+                            if (!email.isNullOrBlank()) {
                                 append("\n$email")
                             }
-                            if (spamReports != 0) {
+                            if (spamReports != null && spamReports != 0) {
                                 append("\nSpam Reports: $spamReports")
                             }
-                            append("\n\n$city | $countryCode")
+                            if (!city.isNullOrBlank()) {
+                                append("\n\n$city | $countryCode")
+                            }
                         },
                         textAlign = TextAlign.Center
                     )

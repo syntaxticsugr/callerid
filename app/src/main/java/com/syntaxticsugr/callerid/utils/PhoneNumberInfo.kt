@@ -8,8 +8,8 @@ import org.json.JSONObject
 
 object PhoneNumberInfo {
 
-    suspend fun getInfo(context: Context, phoneNumber: String): JSONObject {
-        var result = RealmDB.getPhoneNumberInfo(phoneNumber).firstOrNull()
+    suspend fun getInfo(context: Context, phoneNumber: String): JSONObject? {
+        var result = RealmDB.getPhoneNumberInfo(phoneNumber)
 
         if (result == null) {
             val phoneNumberInfo = searchOnTcaller(
@@ -17,21 +17,25 @@ object PhoneNumberInfo {
                 phoneNumber = phoneNumber
             )
 
-            RealmDB.addPhoneNumberInfo(phoneNumber = phoneNumber, info = phoneNumberInfo)
+            if (phoneNumberInfo != null) {
+                RealmDB.addPhoneNumberInfo(phoneNumber = phoneNumber, info = phoneNumberInfo)
 
-            result = PhoneNumberInfoObject().apply {
-                this.phoneNumber = phoneNumber
-                this.info = phoneNumberInfo
+                result = PhoneNumberInfoObject().apply {
+                    this.phoneNumber = phoneNumber
+                    this.info = phoneNumberInfo
+                }
+            } else {
+                return null
             }
         }
 
         return result.info.toJson()
     }
 
-    suspend fun getName(context: Context, phoneNumber: String): String {
+    suspend fun getName(context: Context, phoneNumber: String): String? {
         val info = getInfo(context = context, phoneNumber = phoneNumber)
 
-        return info.getString("name")
+        return info?.optString("name")
     }
 
 }
