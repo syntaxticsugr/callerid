@@ -20,8 +20,10 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -29,7 +31,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
@@ -47,13 +51,24 @@ fun HomeScreen(
     homeViewModel: HomeViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+
     val coroutineScope = rememberCoroutineScope()
 
-    val callsLog = getCallsLog(context = context)
-    val dates = callsLog.keys.toList()
+    var callsLog by remember { mutableStateOf(getCallsLog(context = context)) }
+    var dates by remember { mutableStateOf(callsLog.keys.toList()) }
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState(pageCount = { dates.size })
+
+    LaunchedEffect(lifecycleState) {
+        if (lifecycleState == Lifecycle.State.RESUMED) {
+            callsLog = getCallsLog(context = context)
+            dates = callsLog.keys.toList()
+        }
+    }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->

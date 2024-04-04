@@ -15,10 +15,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +37,7 @@ import com.syntaxticsugr.callerid.utils.callTypeString
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
 import com.syntaxticsugr.callerid.utils.makePhoneCall
 import com.syntaxticsugr.callerid.utils.savePhoneNumber
+import kotlinx.coroutines.launch
 
 @Composable
 fun CallerCard(
@@ -44,23 +46,27 @@ fun CallerCard(
 ) {
     val context = LocalContext.current
 
+    val coroutineScope = rememberCoroutineScope()
+
     var expanded by remember { mutableStateOf(false) }
-    val showPhoneNumberInfoDialog = remember { mutableStateOf(false) }
+    var showPhoneNumberInfoDialog by remember { mutableStateOf(false) }
 
     val isValidPhoneNumber = isValidPhoneNumber(call.phoneNumber)
     var name by remember { mutableStateOf(call.name) }
 
-    if (isValidPhoneNumber && name.isNullOrBlank()) {
-        LaunchedEffect(Unit) {
-            name = PhoneNumberInfo.getName(context = context, phoneNumber = call.phoneNumber)
+    if (isValidPhoneNumber && call.name.isNullOrBlank()) {
+        SideEffect {
+            coroutineScope.launch {
+                name = PhoneNumberInfo.getName(context = context, phoneNumber = call.phoneNumber)
+            }
         }
     }
 
-    if (showPhoneNumberInfoDialog.value) {
+    if (showPhoneNumberInfoDialog) {
         PhoneNumberInfoDialog(
             phoneNumber = call.phoneNumber,
             onDismissRequest = {
-                showPhoneNumberInfoDialog.value = false
+                showPhoneNumberInfoDialog = false
             }
         )
     }
@@ -192,7 +198,7 @@ fun CallerCard(
 
                     IconButton(
                         onClick = {
-                            showPhoneNumberInfoDialog.value = true
+                            showPhoneNumberInfoDialog = true
                         }
                     ) {
                         Icon(
