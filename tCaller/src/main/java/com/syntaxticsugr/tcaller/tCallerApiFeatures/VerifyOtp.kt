@@ -29,7 +29,9 @@ suspend fun TcallerApiClient.verifyOtp(
 
     val resultJson = response.body<String>().toJson()
 
-    val result = if (resultJson.getInt("status") == 2) {
+    val result = if (resultJson.getInt("status") == 17) {
+        VerifyResult.BACKUP_FOUND
+    } else if (resultJson.getInt("status") == 2) {
         AuthKeyManager.saveAuthKey(context, resultJson)
         VerifyResult.VERIFICATION_SUCCESSFUL
     } else if (resultJson.getInt("status") == 11) {
