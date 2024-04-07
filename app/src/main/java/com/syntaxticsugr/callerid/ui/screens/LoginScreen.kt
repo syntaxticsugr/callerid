@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -37,15 +38,15 @@ fun LogInScreen(
     loginViewModel: LoginViewModel = koinViewModel()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val imeState = rememberImeState()
+    val imeState by rememberImeState()
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
-    if (!imeState.value) {
+    if (!imeState) {
         focusManager.clearFocus()
     }
 
-    LaunchedEffect(imeState.value) {
+    LaunchedEffect(imeState) {
         scrollState.animateScrollTo(
             value = 0,
             animationSpec = tween(durationMillis = 400)
@@ -59,7 +60,7 @@ fun LogInScreen(
                 .padding(paddingValues)
                 .verticalScroll(
                     state = scrollState,
-                    enabled = imeState.value
+                    enabled = imeState
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

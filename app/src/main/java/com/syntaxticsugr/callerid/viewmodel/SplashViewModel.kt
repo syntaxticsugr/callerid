@@ -11,7 +11,6 @@ import com.syntaxticsugr.callerid.enums.PermissionsResult
 import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.utils.PermissionsManager
 import com.syntaxticsugr.tcaller.utils.AuthKeyManager
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -44,7 +43,7 @@ class SplashViewModel(
     }
 
     fun setStartDestinationAndRemoveSplash(context: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             setStartDestination(context = context)
             removeSplash()
         }

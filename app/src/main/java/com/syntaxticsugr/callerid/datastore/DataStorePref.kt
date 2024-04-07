@@ -5,8 +5,9 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import java.io.IOException
+import kotlinx.coroutines.withContext
 
 private val Context.dataStore by preferencesDataStore(name = "callerid")
 
@@ -23,13 +24,11 @@ class DataStorePref(context: Context) {
     }
 
     suspend fun readBool(key: String, default: Boolean): Boolean {
-        val prefKey = booleanPreferencesKey(name = key)
+        return withContext(Dispatchers.IO) {
+            val prefKey = booleanPreferencesKey(name = key)
 
-        return try {
             val preferences = dataStore.data.first()
             preferences[prefKey] ?: default
-        } catch (e: IOException) {
-            default
         }
     }
 
@@ -42,13 +41,11 @@ class DataStorePref(context: Context) {
     }
 
     suspend fun readString(key: String, default: String): String {
-        val prefKey = stringPreferencesKey(name = key)
+        return withContext(Dispatchers.IO) {
+            val prefKey = stringPreferencesKey(name = key)
 
-        return try {
             val preferences = dataStore.data.first()
             preferences[prefKey] ?: default
-        } catch (e: IOException) {
-            default
         }
     }
 

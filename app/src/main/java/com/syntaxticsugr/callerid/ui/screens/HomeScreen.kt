@@ -20,6 +20,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -37,9 +38,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
+import com.syntaxticsugr.callerid.datamodel.CallModel
 import com.syntaxticsugr.callerid.ui.widgets.CallerCard
+import com.syntaxticsugr.callerid.ui.widgets.CenteredLinearProgressIndicator
 import com.syntaxticsugr.callerid.ui.widgets.SearchBar
-import com.syntaxticsugr.callerid.utils.getCallsLog
+import com.syntaxticsugr.callerid.utils.CallsLog
 import com.syntaxticsugr.callerid.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -52,21 +55,17 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
 
+    val coroutineScope = rememberCoroutineScope()
+
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
 
-    val coroutineScope = rememberCoroutineScope()
-
-    var callsLog by remember { mutableStateOf(getCallsLog(context = context)) }
-    var dates by remember { mutableStateOf(callsLog.keys.toList()) }
-
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val pagerState = rememberPagerState(pageCount = { dates.size })
+    val pagerState = rememberPagerState(pageCount = { homeViewModel.dates.size })
 
     LaunchedEffect(lifecycleState) {
         if (lifecycleState == Lifecycle.State.RESUMED) {
-            callsLog = getCallsLog(context = context)
-            dates = callsLog.keys.toList()
+            homeViewModel.getDates()
         }
     }
 
@@ -104,74 +103,95 @@ fun HomeScreen(
                 }
             }
 
-            ScrollableTabRow(
-                selectedTabIndex = selectedTabIndex,
-                edgePadding = 0.dw
-            ) {
-                dates.forEachIndexed { index, date ->
-                    Tab(
-                        text = {
-                            Text(
-                                text = date
-                            )
-                        },
-                        selected = selectedTabIndex == index,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        }
-                    )
-                }
-            }
-
-            HorizontalPager(
-                modifier = Modifier
-                    .fillMaxSize(),
-                state = pagerState,
-                verticalAlignment = Alignment.Top
-            ) { page ->
-                val selectedDate = dates[page]
-                val knownCallers = callsLog[selectedDate]!!["known"]!!
-                val unknownCallers = callsLog[selectedDate]!!["unknown"]!!
-                val knownCallersList = knownCallers.keys.toList()
-                val unknownCallersList = unknownCallers.keys.toList()
-
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(horizontal = 0.04.dw)
+            if (homeViewModel.dates.isEmpty()) {
+                CenteredLinearProgressIndicator()
+            } else {
+                ScrollableTabRow(
+                    selectedTabIndex = selectedTabIndex,
+                    edgePadding = 0.dw
                 ) {
-                    if (unknownCallersList.isNotEmpty()) {
-                        item {
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 0.04.dw),
-                                text = "Unknown Callers"
-                            )
-                        }
+                    homeViewModel.dates.forEachIndexed { index, date ->
+                        Tab(
+                            text = {
+                                Text(
+                                    text = date
+                                )
+                            },
+                            selected = selectedTabIndex == index,
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            }
+                        )
+                    }
+                }
 
-                        items(unknownCallersList) { phoneNumber ->
-                            CallerCard(
-                                navController = navController,
-                                call = unknownCallers[phoneNumber]!!
-                            )
+                HorizontalPager(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    state = pagerState,
+                    verticalAlignment = Alignment.Top
+                ) { page ->
+                    val selectedDate = homeViewModel.dates[page]
+
+                    var callsLog by remember { mutableStateOf<Map<String, Map<String, CallModel>>>(emptyMap()) }
+                    lateinit var knownCallers: Map<String, CallModel>
+                    lateinit var unknownCallers: Map<String, CallModel>
+                    lateinit var knownCallersList: List<String>
+                    lateinit var unknownCallersList: List<String>
+
+                    SideEffect {
+                        coroutineScope.launch {
+                            callsLog = CallsLog.byDate(context = context, date = selectedDate)
                         }
                     }
 
-                    if (knownCallersList.isNotEmpty()) {
-                        item {
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 0.04.dw),
-                                text = "From Contacts"
-                            )
-                        }
+                    if (callsLog.isEmpty()) {
+                        CenteredLinearProgressIndicator()
+                    } else {
+                        knownCallers = callsLog["known"]!!
+                        unknownCallers = callsLog["unknown"]!!
+                        knownCallersList = knownCallers.keys.toList()
+                        unknownCallersList = unknownCallers.keys.toList()
 
-                        items(knownCallersList) { phoneNumber ->
-                            CallerCard(
-                                navController = navController,
-                                call = knownCallers[phoneNumber]!!
-                            )
+                        LazyColumn(
+                            modifier = Modifier
+                                .padding(horizontal = 0.04.dw)
+                        ) {
+                            if (unknownCallersList.isNotEmpty()) {
+                                item {
+                                    Text(
+                                        modifier = Modifier
+                                            .padding(top = 0.04.dw),
+                                        text = "Unknown Callers"
+                                    )
+                                }
+
+                                items(unknownCallersList) { phoneNumber ->
+                                    CallerCard(
+                                        navController = navController,
+                                        call = unknownCallers[phoneNumber]!!
+                                    )
+                                }
+                            }
+
+                            if (knownCallersList.isNotEmpty()) {
+                                item {
+                                    Text(
+                                        modifier = Modifier
+                                            .padding(top = 0.04.dw),
+                                        text = "From Contacts"
+                                    )
+                                }
+
+                                items(knownCallersList) { phoneNumber ->
+                                    CallerCard(
+                                        navController = navController,
+                                        call = knownCallers[phoneNumber]!!
+                                    )
+                                }
+                            }
                         }
                     }
                 }

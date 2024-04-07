@@ -15,7 +15,6 @@ import com.syntaxticsugr.tcaller.enums.RequestResult
 import com.syntaxticsugr.tcaller.enums.VerifyResult
 import com.syntaxticsugr.tcaller.tCallerApiFeatures.requestOtp
 import com.syntaxticsugr.tcaller.tCallerApiFeatures.verifyOtp
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -49,7 +48,7 @@ class VerifyViewModel(
     }
 
     fun verifyOtp() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             if (!otp.matches(Regex("^\\s*\\d{6}\\s*\$"))) {
                 otpError = true
             } else {
@@ -105,8 +104,8 @@ class VerifyViewModel(
         }
     }
 
-    private suspend fun getUserCreds(): Job {
-        return viewModelScope.launch(Dispatchers.Main) {
+    private fun getUserCreds(): Job {
+        return viewModelScope.launch {
             firstname = pref.readString(key = "firstName", default = "")
             lastName = pref.readString(key = "lastName", default = "")
             phoneNumber = pref.readString(key = "phoneNumber", default = "")

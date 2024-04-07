@@ -6,6 +6,7 @@ import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 
 object RealmDB {
+
     private val realm = CallerID.realm
 
     suspend fun addPhoneNumberInfo(phoneNumber: String, info: String) {
@@ -23,4 +24,5 @@ object RealmDB {
         val query = realm.query<PhoneNumberInfoObject>("phoneNumber == $0", phoneNumber)
         return query.find().firstOrNull()
     }
+
 }
