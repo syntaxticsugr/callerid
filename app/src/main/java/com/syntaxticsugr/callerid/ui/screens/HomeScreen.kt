@@ -65,7 +65,17 @@ fun HomeScreen(
 
     LaunchedEffect(lifecycleState) {
         if (lifecycleState == Lifecycle.State.RESUMED) {
-            homeViewModel.getDates()
+            val arePermissionsGranted = PermissionsManager.arePermissionsGranted(context)
+
+            if (arePermissionsGranted != PermissionsResult.ALL_GRANTED) {
+                navController.navigate(Screens.Permissions.route) {
+                    popUpTo(Screens.Home.route) {
+                        inclusive = true
+                    }
+                }
+            } else {
+                homeViewModel.getDates()
+            }
         }
     }
 

@@ -60,7 +60,17 @@ fun HistoryScreen(
 
     LaunchedEffect(lifecycleState) {
         if (lifecycleState == Lifecycle.State.RESUMED) {
-            calls = CallsLog.byPhoneNumber(context, phoneNumber)
+            val arePermissionsGranted = PermissionsManager.arePermissionsGranted(context)
+
+            if (arePermissionsGranted != PermissionsResult.ALL_GRANTED) {
+                navController.navigate(Screens.Permissions.route) {
+                    popUpTo(Screens.History.route) {
+                        inclusive = true
+                    }
+                }
+            } else {
+                calls = CallsLog.byPhoneNumber(context, phoneNumber)
+            }
         }
     }
 
