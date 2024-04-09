@@ -11,5 +11,5 @@ data class DeviceDataModel(
     val model: String,
     val osName: String,
     val osVersion: String,
-    val simSerials: List<String>?
+    val simSerials: List<String>
 )

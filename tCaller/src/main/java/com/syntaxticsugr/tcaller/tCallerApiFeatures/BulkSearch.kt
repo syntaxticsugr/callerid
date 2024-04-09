@@ -36,7 +36,7 @@ suspend fun TcallerApiClient.bulkSearch(
             SearchResult.SUCCESS
         }
         429 -> SearchResult.REQUEST_QUOTA_EXCEEDED
-        else -> SearchResult.UNEXPECTED_ERROR
+        else -> SearchResult.ERROR
     }
 
     return Pair(result, resultList)

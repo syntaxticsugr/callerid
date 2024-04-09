@@ -3,7 +3,6 @@ package com.syntaxticsugr.callerid.utils
 import android.content.Context
 import android.provider.CallLog
 import com.syntaxticsugr.callerid.datamodel.CallModel
-import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat

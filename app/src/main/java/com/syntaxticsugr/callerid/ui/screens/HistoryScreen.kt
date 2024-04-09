@@ -26,19 +26,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavController
 import com.slaviboy.composeunits.dw
 import com.slaviboy.composeunits.sw
 import com.syntaxticsugr.callerid.R
 import com.syntaxticsugr.callerid.datamodel.CallModel
+import com.syntaxticsugr.callerid.enums.PermissionsResult
+import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.ui.widgets.CallerCard
 import com.syntaxticsugr.callerid.ui.widgets.CenteredLinearProgressIndicator
 import com.syntaxticsugr.callerid.ui.widgets.ProfileAvatar
 import com.syntaxticsugr.callerid.utils.CallsLog
+import com.syntaxticsugr.callerid.utils.PermissionsManager
 import com.syntaxticsugr.callerid.utils.PhoneNumberInfo
 import com.syntaxticsugr.callerid.utils.makePhoneCall
 
 @Composable
 fun HistoryScreen(
+    navController: NavController,
     phoneNumber: String
 ) {
     val context = LocalContext.current

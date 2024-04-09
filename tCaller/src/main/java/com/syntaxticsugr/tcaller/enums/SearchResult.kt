@@ -106,5 +106,5 @@ enum class SearchResult {
     //        }
     //    }
     REQUEST_QUOTA_EXCEEDED,
-    UNEXPECTED_ERROR
+    ERROR
 }

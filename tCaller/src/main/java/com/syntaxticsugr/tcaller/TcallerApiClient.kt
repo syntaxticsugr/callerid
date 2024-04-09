@@ -10,6 +10,7 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.userAgent
 import io.ktor.http.withCharset
@@ -45,15 +46,15 @@ object TcallerApiClient {
         }
     }
 
-    private const val CLIENTSECRET = "lvc22mp3l1sfv6ujg83rd17btt"
+    const val CLIENTSECRET = "lvc22mp3l1sfv6ujg83rd17btt"
     private val userAgent =
         "Truecaller/${majorVersion}.${minorVersion}.${buildVersion} (Android;${androidVersion})"
 
     fun HttpRequestBuilder.tCallerClient() {
-        contentType(ContentType.Application.Json.withCharset(Charsets.UTF_8))
         accept(ContentType.Application.GZip)
+        contentType(ContentType.Application.Json.withCharset(Charsets.UTF_8))
+        header(HttpHeaders.Connection, "Keep-Alive")
         userAgent(userAgent)
-        header("clientsecret", CLIENTSECRET)
     }
 
     var httpClient = createClient()

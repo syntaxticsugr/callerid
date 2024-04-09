@@ -7,6 +7,7 @@ import com.syntaxticsugr.tcaller.postbody.postBodyCompleteOnboarding
 import com.syntaxticsugr.tcaller.utils.AuthKeyManager
 import com.syntaxticsugr.tcaller.utils.toJson
 import io.ktor.client.call.body
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import kotlinx.serialization.encodeToString
@@ -27,6 +28,7 @@ suspend fun TcallerApiClient.completeOnboarding(
 
     val response = httpClient.post(url) {
         tCallerClient()
+        header("clientsecret", CLIENTSECRET)
         setBody(Json.encodeToString(postBodyCompleteOnboarding))
     }
 

@@ -10,9 +10,9 @@ import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.utils.getCountryCode
 import com.syntaxticsugr.callerid.utils.getDialingCodeFromCountryCode
+import com.syntaxticsugr.callerid.utils.getDialingCodeFromPhoneNumber
 import com.syntaxticsugr.callerid.utils.isValidEmail
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
-import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -50,7 +50,7 @@ class LoginViewModel(
             pref.writeString(key = "lastName", value = lastName.trim())
             pref.writeString(key = "phoneNumber", value = formattedPhoneNumber())
             pref.writeString(key = "email", value = formattedEmail())
-            pref.writeString(key = "dialingCode", value = dialingCode.toString())
+            pref.writeString(key = "dialingCode", value = dialingCode)
         }
     }
 

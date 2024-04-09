@@ -42,7 +42,7 @@ class VerifyViewModel(
     fun nextScreen(navController: NavController) {
         navController.navigate(Screens.Home.route) {
             popUpTo(Screens.Verify.route) {
-                inclusive = false
+                inclusive = true
             }
         }
     }

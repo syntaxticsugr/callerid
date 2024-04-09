@@ -8,6 +8,5 @@ data class VerifyOtpDataModel(
     val dialingCode: Int,
     val phoneNumber: String,
     val requestId: String,
-    val token: String,
-    val verifiedSim: SimDataModel?
+    val token: String
 )

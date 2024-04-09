@@ -1,16 +1,16 @@
 package com.syntaxticsugr.tcaller.postbody
 
 import com.syntaxticsugr.tcaller.datamodel.VerifyOtpDataModel
-import com.syntaxticsugr.tcaller.utils.getCountryCodeFromPhoneNumber
-import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
+import com.syntaxticsugr.tcaller.utils.parsePhoneNumber
 
 fun postBodyVerifyOtp(phoneNumber: String, requestId: String, token: String): VerifyOtpDataModel {
+    val userPhoneNumber = parsePhoneNumber(phoneNumber)
+
     return VerifyOtpDataModel(
-        countryCode = getCountryCodeFromPhoneNumber(phoneNumber),
-        dialingCode = getDialingCodeFromPhoneNumber(phoneNumber),
-        phoneNumber = phoneNumber,
+        countryCode = userPhoneNumber.countryCode,
+        dialingCode = userPhoneNumber.dialingCode,
+        phoneNumber = userPhoneNumber.phoneNumberWithoutU002B,
         requestId = requestId,
-        token = token,
-        verifiedSim = null
+        token = token
     )
 }
