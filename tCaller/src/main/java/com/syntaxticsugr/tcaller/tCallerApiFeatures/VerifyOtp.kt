@@ -2,6 +2,7 @@ package com.syntaxticsugr.tcaller.tCallerApiFeatures
 
 import android.content.Context
 import com.syntaxticsugr.tcaller.TcallerApiClient
+import com.syntaxticsugr.tcaller.enums.OnboardingResult
 import com.syntaxticsugr.tcaller.enums.VerifyResult
 import com.syntaxticsugr.tcaller.postbody.postBodyVerifyOtp
 import com.syntaxticsugr.tcaller.utils.AuthKeyManager
@@ -22,26 +23,41 @@ suspend fun TcallerApiClient.verifyOtp(
     val postBodyVerifyOtp = postBodyVerifyOtp(phoneNumber, requestId, token)
 
     val response =
-        httpClient.post("https://account-asia-south1.truecaller.com/v1/verifyOnboardingOtp") {
+        httpClient.post("https://account-noneu.truecaller.com/v1/verifyOnboardingOtp") {
             tCallerClient()
             setBody(Json.encodeToString(postBodyVerifyOtp))
         }
 
-    val resultJson = response.body<String>().toJson()
+    var resultJson = response.body<String>().toJson()
 
-    val result = if (resultJson.getInt("status") == 17) {
-        VerifyResult.BACKUP_FOUND
-    } else if (resultJson.getInt("status") == 2) {
-        AuthKeyManager.saveAuthKey(context, resultJson)
-        VerifyResult.VERIFICATION_SUCCESSFUL
-    } else if (resultJson.getInt("status") == 11) {
-        VerifyResult.INVALID_OTP
-    } else if (resultJson.getInt("status") == 7) {
-        VerifyResult.RETRIES_LIMIT_EXCEEDED
-    } else if (resultJson.getBoolean("suspended")) {
-        VerifyResult.ACCOUNT_SUSPENDED
-    } else {
-        VerifyResult.ERROR
+    val status = resultJson.getInt("status")
+
+    var result = when (status) {
+        17 -> VerifyResult.BACKUP_FOUND
+        2 -> {
+            AuthKeyManager.saveAuthKey(context, resultJson)
+            VerifyResult.VERIFICATION_SUCCESSFUL
+        }
+
+        11 -> VerifyResult.INVALID_OTP
+        7 -> VerifyResult.RETRIES_LIMIT_EXCEEDED
+        else -> if (resultJson.optBoolean("suspended")) VerifyResult.ACCOUNT_SUSPENDED else VerifyResult.ERROR
+    }
+
+    if (result == VerifyResult.BACKUP_FOUND) {
+        val (onBoardingResult, onBoardingResultJson) = TcallerApiClient.completeOnboarding(
+            context,
+            phoneNumber,
+            requestId
+        )
+
+        resultJson = onBoardingResultJson
+
+        result = if (onBoardingResult == OnboardingResult.SUCCESSFUL) {
+            VerifyResult.VERIFICATION_SUCCESSFUL
+        } else {
+            VerifyResult.ERROR
+        }
     }
 
     return Pair(result, resultJson)
