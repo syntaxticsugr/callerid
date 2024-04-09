@@ -19,15 +19,15 @@ private fun isHMS(): Boolean {
 }
 
 fun getMobileServices(): List<String> {
-    val servicesUsed = mutableListOf<String>()
+    val services = mutableListOf<String>()
 
     if (isGMS()) {
-        servicesUsed.add("GMS")
+        services.add("GMS")
     }
 
     if (isHMS()) {
-        servicesUsed.add("HMS")
+        services.add("HMS")
     }
 
-    return servicesUsed
+    return services
 }

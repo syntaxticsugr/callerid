@@ -32,8 +32,6 @@ object TcallerApiClient {
 
     @OptIn(ExperimentalSerializationApi::class)
     private fun createClient() = HttpClient(OkHttp) {
-//        expectSuccess = true
-
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true

@@ -18,13 +18,17 @@ suspend fun TcallerApiClient.completeOnboarding(
     phoneNumber: String,
     requestId: String
 ): Pair<OnboardingResult, JSONObject> {
-    val postBodyCompleteOnboarding = postBodyCompleteOnboarding(phoneNumber, requestId)
+    val url = "https://account-noneu.truecaller.com/v1/completeOnboarding"
 
-    val response =
-        httpClient.post("https://account-noneu.truecaller.com/v1/completeOnboarding") {
-            tCallerClient()
-            setBody(Json.encodeToString(postBodyCompleteOnboarding))
-        }
+    val postBodyCompleteOnboarding = postBodyCompleteOnboarding(
+        phoneNumber = phoneNumber,
+        requestId = requestId
+    )
+
+    val response = httpClient.post(url) {
+        tCallerClient()
+        setBody(Json.encodeToString(postBodyCompleteOnboarding))
+    }
 
     val resultJson = response.body<String>().toJson()
 
@@ -32,10 +36,10 @@ suspend fun TcallerApiClient.completeOnboarding(
 
     val result = when (status) {
         19 -> {
-            AuthKeyManager.saveAuthKey(context, resultJson)
+            val installationId = resultJson.getString("installationId")
+            AuthKeyManager.saveAuthKey(context = context, installationId = installationId)
             OnboardingResult.SUCCESSFUL
         }
-
         else -> OnboardingResult.ERROR
     }
 

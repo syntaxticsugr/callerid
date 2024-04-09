@@ -7,6 +7,5 @@ data class AppDataModel(
     val buildVersion: Int,
     val majorVersion: Int,
     val minorVersion: Int,
-    val store: String,
-    val updatedStore: String?
+    val store: String
 )

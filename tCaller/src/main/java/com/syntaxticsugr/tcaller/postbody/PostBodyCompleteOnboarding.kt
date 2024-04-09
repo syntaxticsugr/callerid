@@ -1,7 +1,7 @@
 package com.syntaxticsugr.tcaller.postbody
 
 import com.syntaxticsugr.tcaller.datamodel.CompleteOnboardingDataModel
-import com.syntaxticsugr.tcaller.utils.getCountryCode
+import com.syntaxticsugr.tcaller.utils.getCountryCodeFromPhoneNumber
 import com.syntaxticsugr.tcaller.utils.getDialingCodeFromPhoneNumber
 
 fun postBodyCompleteOnboarding(
@@ -9,7 +9,7 @@ fun postBodyCompleteOnboarding(
     requestId: String
 ): CompleteOnboardingDataModel {
     return CompleteOnboardingDataModel(
-        countryCode = getCountryCode(phoneNumber),
+        countryCode = getCountryCodeFromPhoneNumber(phoneNumber),
         dialingCode = getDialingCodeFromPhoneNumber(phoneNumber),
         phoneNumber = phoneNumber,
         requestId = requestId

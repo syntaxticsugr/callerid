@@ -17,23 +17,31 @@ suspend fun TcallerApiClient.requestOtp(
     context: Context,
     phoneNumber: String
 ): Pair<RequestResult, JSONObject> {
-    val postBodyRequestOtp = postBodyRequestOtp(context, phoneNumber, tCallerAppVersion)
+    val url = "https://account-noneu.truecaller.com/v3/sendOnboardingOtp"
 
-    val response =
-        httpClient.post("https://account-asia-south1.truecaller.com/v3/sendOnboardingOtp") {
-            tCallerClient()
-            setBody(Json.encodeToString(postBodyRequestOtp))
-        }
+    val postBodyRequestOtp = postBodyRequestOtp(
+        context = context,
+        phoneNumber = phoneNumber,
+        tCallerAppVersion = tCallerAppVersion
+    )
+
+    val response = httpClient.post(url) {
+        tCallerClient()
+        setBody(Json.encodeToString(postBodyRequestOtp))
+    }
 
     val resultJson = response.body<String>().toJson()
 
-    val result = if ((resultJson.getInt("status") == 1) || (resultJson.getInt("status") == 9)) {
-        RequestResult.OTP_SENT
-    } else if (resultJson.getInt("status") == 3) {
-        AuthKeyManager.saveAuthKey(context, resultJson)
-        RequestResult.ALREADY_VERIFIED
-    } else {
-        RequestResult.ERROR
+    val status = resultJson.getInt("status")
+
+    val result = when (status) {
+        1, 9 -> RequestResult.OTP_SENT
+        3 -> {
+            val installationId = resultJson.getString("installationId")
+            AuthKeyManager.saveAuthKey(context = context, installationId = installationId)
+            RequestResult.ALREADY_VERIFIED
+        }
+        else -> RequestResult.ERROR
     }
 
     return Pair(result, resultJson)
