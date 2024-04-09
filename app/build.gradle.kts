@@ -12,8 +12,8 @@ android {
         applicationId = "com.syntaxticsugr.callerid"
         minSdk = 24
         targetSdk = 34
-        versionCode = 30
-        versionName = "0.3.0-alpha"
+        versionCode = 35
+        versionName = "0.3.5-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
