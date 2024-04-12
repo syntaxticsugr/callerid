@@ -11,7 +11,6 @@ import com.syntaxticsugr.callerid.ui.screens.HistoryScreen
 import com.syntaxticsugr.callerid.ui.screens.HomeScreen
 import com.syntaxticsugr.callerid.ui.screens.LogInScreen
 import com.syntaxticsugr.callerid.ui.screens.PermissionsScreen
-import com.syntaxticsugr.callerid.ui.screens.VerifyScreen
 import com.syntaxticsugr.callerid.ui.screens.WelcomeScreen
 
 @ExperimentalAnimationApi
@@ -34,10 +33,6 @@ fun SetupNavGraph(
 
         composable(route = Screens.LogIn.route) {
             LogInScreen(navController = navController)
-        }
-
-        composable(route = Screens.Verify.route) {
-            VerifyScreen(navController = navController)
         }
 
         composable(route = Screens.Home.route) {

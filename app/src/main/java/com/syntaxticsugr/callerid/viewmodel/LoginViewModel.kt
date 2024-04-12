@@ -1,5 +1,7 @@
 package com.syntaxticsugr.callerid.viewmodel
 
+import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,84 +13,152 @@ import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.utils.getCountryCode
 import com.syntaxticsugr.callerid.utils.getDialingCodeFromCountryCode
 import com.syntaxticsugr.callerid.utils.getDialingCodeFromPhoneNumber
-import com.syntaxticsugr.callerid.utils.isValidEmail
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
+import com.syntaxticsugr.tcaller.TcallerApiClient
+import com.syntaxticsugr.tcaller.enums.RequestResult
+import com.syntaxticsugr.tcaller.enums.VerifyResult
+import com.syntaxticsugr.tcaller.tCallerApiFeatures.requestOtp
+import com.syntaxticsugr.tcaller.tCallerApiFeatures.verifyOtp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
+    application: Application,
     private val pref: DataStorePref
 ) : ViewModel() {
+
+    private val appContext: Context = application.applicationContext
 
     private val countryCode = getCountryCode()
     private val dialingCode = getDialingCodeFromCountryCode(countryCode)
 
-    var firstName by mutableStateOf("")
-    var lastName by mutableStateOf("")
     var phoneNumber by mutableStateOf(dialingCode)
-    var email by mutableStateOf("")
-
-    var firstNameError by mutableStateOf(false)
-    var lastNameError by mutableStateOf(false)
     var phoneNumberError by mutableStateOf(false)
-    var emailError by mutableStateOf(false)
+    var otp by mutableStateOf("")
+    var otpError by mutableStateOf(false)
 
-    private fun formattedEmail(): String {
-        return email.trim()
-    }
+    private lateinit var requestId: String
+    lateinit var errorMessage: String
+
+    var isRequestingOtp by mutableStateOf(false)
+    var isOtpSent by mutableStateOf(false)
+    var isVerifying by mutableStateOf(false)
+    var isVerificationSuccessful by mutableStateOf(false)
+    var unexpectedError by mutableStateOf(false)
 
     private fun formattedPhoneNumber(): String {
         return "+${phoneNumber.filterNot { it.isWhitespace() }}"
+    }
+
+    fun nextScreen(navController: NavController) {
+        navController.navigate(Screens.Home.route) {
+            popUpTo(Screens.LogIn.route) {
+                inclusive = true
+            }
+        }
     }
 
     private fun saveUserCreds(): Job {
         val dialingCode = getDialingCodeFromPhoneNumber(formattedPhoneNumber())
 
         return viewModelScope.launch(Dispatchers.IO) {
-            pref.writeString(key = "firstName", value = firstName.trim())
-            pref.writeString(key = "lastName", value = lastName.trim())
             pref.writeString(key = "phoneNumber", value = formattedPhoneNumber())
-            pref.writeString(key = "email", value = formattedEmail())
             pref.writeString(key = "dialingCode", value = dialingCode)
         }
     }
 
-    private fun validateFields(): Boolean {
-        var isValid = true
-
-        if (firstName.isBlank()) {
-            firstNameError = true
-            isValid = false
-        }
-        if (lastName.isBlank()) {
-            lastNameError = true
-            isValid = false
-        }
-        if (!isValidPhoneNumber(formattedPhoneNumber())) {
-            phoneNumberError = true
-            isValid = false
-        }
-        if (email.isNotBlank() && !isValidEmail(formattedEmail())) {
-            emailError = true
-            isValid = false
-        }
-
-        return isValid
-    }
-
-    fun nextScreen(navController: NavController) {
+    fun verifyOtp() {
         viewModelScope.launch {
-            if (validateFields()) {
-                val job = saveUserCreds()
-                job.join()
+            if (!otp.matches(Regex("^\\s*\\d{6}\\s*\$"))) {
+                otpError = true
+            } else {
+                isVerifying = true
 
-                navController.navigate(Screens.Verify.route) {
-                    popUpTo(Screens.LogIn.route) {
-                        inclusive = false
+                val (result, resultJson) = TcallerApiClient.verifyOtp(
+                    context = appContext,
+                    phoneNumber = formattedPhoneNumber(),
+                    requestId = requestId,
+                    token = otp
+                )
+
+                isVerifying = false
+
+                when (result) {
+                    VerifyResult.VERIFICATION_SUCCESSFUL -> {
+                        val job = saveUserCreds()
+                        job.join()
+
+                        isVerificationSuccessful = true
+                    }
+
+                    VerifyResult.INVALID_OTP -> {
+                        otpError = true
+                    }
+
+                    else -> {
+                        errorMessage = "${resultJson.getString("message")} :("
+                        unexpectedError = true
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun requestOtp() {
+        val (result, resultJson) = TcallerApiClient.requestOtp(
+            context = appContext,
+            phoneNumber = formattedPhoneNumber()
+        )
+
+        isRequestingOtp = false
+
+        when (result) {
+            RequestResult.OTP_SENT -> {
+                requestId = resultJson.getString("requestId")
+                isOtpSent = true
+            }
+
+            RequestResult.ALREADY_VERIFIED -> {
+                val job = saveUserCreds()
+                job.join()
+
+                isVerificationSuccessful = true
+            }
+
+            else -> {
+                errorMessage = "${resultJson.getString("message")} :("
+                unexpectedError = true
+            }
+        }
+    }
+
+    private fun validatePhoneNumber(): Boolean {
+        return if (!isValidPhoneNumber(formattedPhoneNumber())) {
+            phoneNumberError = true
+            false
+        } else {
+            true
+        }
+    }
+
+    fun validatePhoneAndRequestOtp() {
+        if (validatePhoneNumber()) {
+            isRequestingOtp = true
+
+            viewModelScope.launch {
+                requestOtp()
+            }
+        }
+    }
+
+    fun getButtonText(): String {
+        return if (isVerificationSuccessful) {
+            "Next"
+        } else if (isOtpSent) {
+            "Verify OTP"
+        } else {
+            "Request OTP"
         }
     }
 

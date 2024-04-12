@@ -1,29 +1,28 @@
 package com.syntaxticsugr.callerid.ui.screens
 
-import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dh
 import com.slaviboy.composeunits.dw
@@ -38,99 +37,125 @@ fun LogInScreen(
     loginViewModel: LoginViewModel = koinViewModel()
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+
     val imeState by rememberImeState()
     val focusManager = LocalFocusManager.current
-    val scrollState = rememberScrollState()
-
     if (!imeState) {
         focusManager.clearFocus()
     }
 
-    LaunchedEffect(imeState) {
-        scrollState.animateScrollTo(
-            value = 0,
-            animationSpec = tween(durationMillis = 400)
-        )
-    }
+    var buttonText by remember { mutableStateOf(loginViewModel.getButtonText()) }
+    buttonText = loginViewModel.getButtonText()
+
+    var lockTextField by remember { mutableStateOf(false) }
+    lockTextField = loginViewModel.isRequestingOtp || loginViewModel.isVerifying || loginViewModel.isVerificationSuccessful
 
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(
-                    state = scrollState,
-                    enabled = imeState
-                ),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 0.10.dw),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(0.15.dh))
-
             Text(
-                text = "LogIn using existing TrueCaller account.",
-                fontWeight = FontWeight.Bold
+                modifier = Modifier
+                    .fillMaxWidth(),
+                text = "LogIn with your Phone Number.",
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start
             )
 
-            Spacer(modifier = Modifier.height(0.05.dh))
+            Spacer(modifier = Modifier.height(0.025.dh))
 
-            CustomTextField(
-                value = loginViewModel.firstName,
-                onValueChange = { value ->
-                    loginViewModel.firstName = value
-                    loginViewModel.firstNameError = false
-                },
-                label = "First Name",
-                leadingIcon = Icons.Filled.Person,
-                isError = loginViewModel.firstNameError
-            )
-            CustomTextField(
-                value = loginViewModel.lastName,
-                onValueChange = { value ->
-                    loginViewModel.lastName = value
-                    loginViewModel.lastNameError = false
-                },
-                label = "Last Name",
-                isError = loginViewModel.lastNameError
-            )
             CustomTextField(
                 value = loginViewModel.phoneNumber,
                 onValueChange = { value ->
                     loginViewModel.phoneNumber = value
                     loginViewModel.phoneNumberError = false
+                    loginViewModel.otp = ""
+                    loginViewModel.otpError = false
+                    loginViewModel.isRequestingOtp = false
+                    loginViewModel.isOtpSent = false
+                    loginViewModel.isVerifying = false
+                    loginViewModel.isVerificationSuccessful = false
+                    loginViewModel.unexpectedError = false
                 },
+                readOnly = lockTextField,
                 label = "Phone Number",
                 prefix = "+",
-                leadingIcon = Icons.Filled.Phone,
                 isError = loginViewModel.phoneNumberError,
                 keyboardType = KeyboardType.Number
             )
-            CustomTextField(
-                value = loginViewModel.email,
-                onValueChange = { value ->
-                    loginViewModel.email = value
-                    loginViewModel.emailError = false
-                },
-                label = "Email",
-                supportingText = "optional",
-                leadingIcon = Icons.Filled.Email,
-                isError = loginViewModel.emailError,
-                keyboardType = KeyboardType.Email
-            )
 
-            Spacer(modifier = Modifier.height(0.10.dw))
+            if (loginViewModel.isRequestingOtp) {
+                Spacer(modifier = Modifier.height(0.05.dw))
 
-            Button(
-                onClick = {
-                    keyboardController?.hide()
-                    loginViewModel.nextScreen(navController)
-                }
-            ) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+
+                Spacer(modifier = Modifier.height(0.02.dw))
+
                 Text(
-                    text = "Next"
+                    text = "Requesting OTP"
+                )
+            } else if (loginViewModel.isOtpSent) {
+                CustomTextField(
+                    value = loginViewModel.otp,
+                    onValueChange = { value ->
+                        loginViewModel.otp = value
+                        loginViewModel.otpError = false
+                    },
+                    readOnly = lockTextField,
+                    label = "OTP",
+                    isError = loginViewModel.otpError,
+                    keyboardType = KeyboardType.Number
+                )
+            } else if (loginViewModel.isVerifying) {
+                Spacer(modifier = Modifier.height(0.05.dw))
+
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+
+                Spacer(modifier = Modifier.height(0.01.dw))
+
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = "Verifying OTP"
+                )
+            } else if (loginViewModel.isVerificationSuccessful) {
+                Spacer(modifier = Modifier.height(0.05.dw))
+
+                Text(
+                    text = "Verification Successful :)"
+                )
+            } else if (loginViewModel.unexpectedError) {
+                Spacer(modifier = Modifier.height(0.05.dw))
+
+                Text(
+                    text = loginViewModel.errorMessage
                 )
             }
 
-            Spacer(modifier = Modifier.height(0.55.dh))
+            Spacer(modifier = Modifier.height(0.05.dw))
+
+            if (!loginViewModel.isRequestingOtp && !loginViewModel.isVerifying && !loginViewModel.unexpectedError) {
+                Button(
+                    onClick = {
+                        keyboardController?.hide()
+
+                        when (buttonText) {
+                            "Next" -> loginViewModel.nextScreen(navController)
+                            "Request OTP" -> loginViewModel.validatePhoneAndRequestOtp()
+                            "Verify OTP" -> loginViewModel.verifyOtp()
+                        }
+                    }
+                ) {
+                    Text(
+                        buttonText
+                    )
+                }
+            }
         }
     }
 }
