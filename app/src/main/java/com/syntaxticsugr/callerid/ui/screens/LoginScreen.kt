@@ -12,10 +12,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -26,8 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.slaviboy.composeunits.dh
 import com.slaviboy.composeunits.dw
+import com.syntaxticsugr.callerid.enums.ImeState
 import com.syntaxticsugr.callerid.ui.widgets.CustomTextField
-import com.syntaxticsugr.callerid.utils.rememberImeState
+import com.syntaxticsugr.callerid.utils.ImeStateListener
 import com.syntaxticsugr.callerid.viewmodel.LoginViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -38,17 +35,17 @@ fun LogInScreen(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val imeState by rememberImeState()
+    val buttonText = loginViewModel.getButtonText()
+
+    val lockTextField = loginViewModel.isRequestingOtp || loginViewModel.isVerifying || loginViewModel.isVerificationSuccessful
+
     val focusManager = LocalFocusManager.current
-    if (!imeState) {
-        focusManager.clearFocus()
+    ImeStateListener { state ->
+        when (state) {
+            ImeState.HIDDEN -> focusManager.clearFocus()
+            else -> {}
+        }
     }
-
-    var buttonText by remember { mutableStateOf(loginViewModel.getButtonText()) }
-    buttonText = loginViewModel.getButtonText()
-
-    var lockTextField by remember { mutableStateOf(false) }
-    lockTextField = loginViewModel.isRequestingOtp || loginViewModel.isVerifying || loginViewModel.isVerificationSuccessful
 
     Scaffold { paddingValues ->
         Column(

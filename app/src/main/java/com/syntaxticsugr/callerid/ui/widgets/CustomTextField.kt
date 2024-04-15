@@ -1,11 +1,9 @@
 package com.syntaxticsugr.callerid.ui.widgets
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -23,6 +21,7 @@ import com.slaviboy.composeunits.dw
 fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
+    readOnly: Boolean = false,
     label: String,
     prefix: String? = null,
     supportingText: String? = null,
@@ -33,7 +32,7 @@ fun CustomTextField(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(end = 0.10.dw, top = 0.025.dw, bottom = 0.025.dw),
+            .padding(vertical = 0.025.dw),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (leadingIcon != null) {
@@ -41,11 +40,9 @@ fun CustomTextField(
                 imageVector = leadingIcon,
                 contentDescription = null,
                 modifier = Modifier
-                    .padding(horizontal = 0.05.dw)
+                    .padding(end = 0.05.dw)
                     .size(0.08.dw),
             )
-        } else {
-            Spacer(modifier = Modifier.width((0.05.dw * 2) + 0.08.dw))
         }
 
         OutlinedTextField(
@@ -53,6 +50,7 @@ fun CustomTextField(
                 .fillMaxWidth(),
             value = value,
             onValueChange = onValueChange,
+            readOnly = readOnly,
             singleLine = true,
             label = {
                 Text(

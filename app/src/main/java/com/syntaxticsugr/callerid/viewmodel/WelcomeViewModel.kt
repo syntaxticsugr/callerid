@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.datastore.DataStorePref
 import com.syntaxticsugr.callerid.navigation.Screens
+import com.syntaxticsugr.callerid.utils.navigateAndClean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -21,11 +22,7 @@ class WelcomeViewModel(
     fun nextScreen(navController: NavController) {
         doNotShowWelcomePage()
 
-        navController.navigate(Screens.Permissions.route) {
-            popUpTo(Screens.Welcome.route) {
-                inclusive = true
-            }
-        }
+        navController.navigateAndClean(Screens.Permissions.route)
     }
 
 }

@@ -20,8 +20,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +30,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
@@ -45,7 +42,9 @@ import com.syntaxticsugr.callerid.ui.widgets.CallerCard
 import com.syntaxticsugr.callerid.ui.widgets.CenteredLinearProgressIndicator
 import com.syntaxticsugr.callerid.ui.widgets.SearchBar
 import com.syntaxticsugr.callerid.utils.CallsLog
+import com.syntaxticsugr.callerid.utils.LifecycleEventListener
 import com.syntaxticsugr.callerid.utils.PermissionsManager
+import com.syntaxticsugr.callerid.utils.navigateAndClean
 import com.syntaxticsugr.callerid.viewmodel.HomeViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -60,25 +59,19 @@ fun HomeScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
-
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState(pageCount = { homeViewModel.dates.size })
 
-    LaunchedEffect(lifecycleState) {
-        if (lifecycleState == Lifecycle.State.RESUMED) {
-            val arePermissionsGranted = PermissionsManager.arePermissionsGranted(context)
-
-            if (arePermissionsGranted != PermissionsResult.ALL_GRANTED) {
-                navController.navigate(Screens.Permissions.route) {
-                    popUpTo(Screens.Home.route) {
-                        inclusive = true
-                    }
+    LifecycleEventListener { event ->
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> {
+                if (PermissionsManager.arePermissionsGranted(context) == PermissionsResult.ALL_GRANTED) {
+                    homeViewModel.getDates()
+                } else {
+                    navController.navigateAndClean(Screens.Permissions.route)
                 }
-            } else {
-                homeViewModel.getDates()
             }
+            else -> {}
         }
     }
 
@@ -154,9 +147,14 @@ fun HomeScreen(
                     lateinit var knownCallersList: List<String>
                     lateinit var unknownCallersList: List<String>
 
-                    SideEffect {
-                        coroutineScope.launch {
-                            callsLog = CallsLog.byDate(context = context, date = selectedDate)
+                    LifecycleEventListener { event ->
+                        when (event) {
+                            Lifecycle.Event.ON_RESUME -> {
+                                coroutineScope.launch {
+                                    callsLog = CallsLog.byDate(context = context, date = selectedDate)
+                                }
+                            }
+                            else -> {}
                         }
                     }
 

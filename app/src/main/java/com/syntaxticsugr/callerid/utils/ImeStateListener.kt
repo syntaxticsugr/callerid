@@ -3,17 +3,13 @@ package com.syntaxticsugr.callerid.utils
 import android.view.ViewTreeObserver
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.syntaxticsugr.callerid.enums.ImeState
 
 @Composable
-fun rememberImeState(): State<Boolean> {
-    val imeState = remember { mutableStateOf(false) }
-
+fun ImeStateListener(state: (ImeState) -> Unit) {
     val view = LocalView.current
 
     DisposableEffect(view) {
@@ -21,7 +17,9 @@ fun rememberImeState(): State<Boolean> {
             val isKeyboardOpen = ViewCompat.getRootWindowInsets(view)
                 ?.isVisible(WindowInsetsCompat.Type.ime()) ?: true
 
-            imeState.value = isKeyboardOpen
+            val imeState = if (isKeyboardOpen) ImeState.VISIBLE else ImeState.HIDDEN
+
+            state(imeState)
         }
 
         view.viewTreeObserver.addOnGlobalLayoutListener(listener)
@@ -30,6 +28,4 @@ fun rememberImeState(): State<Boolean> {
             view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
         }
     }
-
-    return imeState
 }

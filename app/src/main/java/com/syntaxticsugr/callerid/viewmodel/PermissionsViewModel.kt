@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import com.syntaxticsugr.callerid.enums.PermissionsResult
 import com.syntaxticsugr.callerid.navigation.Screens
 import com.syntaxticsugr.callerid.utils.PermissionsManager
+import com.syntaxticsugr.callerid.utils.navigateAndClean
 import com.syntaxticsugr.tcaller.utils.AuthKeyManager
 
 class PermissionsViewModel(
@@ -37,11 +38,7 @@ class PermissionsViewModel(
             Screens.Home.route
         }
 
-        navController.navigate(destination) {
-            popUpTo(Screens.Permissions.route) {
-                inclusive = true
-            }
-        }
+        navController.navigateAndClean(destination)
     }
 
     fun getButtonText(context: Context): String {

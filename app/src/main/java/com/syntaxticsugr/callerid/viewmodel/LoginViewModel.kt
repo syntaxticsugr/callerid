@@ -14,6 +14,7 @@ import com.syntaxticsugr.callerid.utils.getCountryCode
 import com.syntaxticsugr.callerid.utils.getDialingCodeFromCountryCode
 import com.syntaxticsugr.callerid.utils.getDialingCodeFromPhoneNumber
 import com.syntaxticsugr.callerid.utils.isValidPhoneNumber
+import com.syntaxticsugr.callerid.utils.navigateAndClean
 import com.syntaxticsugr.tcaller.TcallerApiClient
 import com.syntaxticsugr.tcaller.enums.RequestResult
 import com.syntaxticsugr.tcaller.enums.VerifyResult
@@ -52,11 +53,7 @@ class LoginViewModel(
     }
 
     fun nextScreen(navController: NavController) {
-        navController.navigate(Screens.Home.route) {
-            popUpTo(Screens.LogIn.route) {
-                inclusive = true
-            }
-        }
+        navController.navigateAndClean(Screens.Home.route)
     }
 
     private fun saveUserCreds(): Job {

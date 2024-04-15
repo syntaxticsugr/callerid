@@ -32,7 +32,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.slaviboy.composeunits.dw
 import com.syntaxticsugr.callerid.R
-import com.syntaxticsugr.callerid.utils.rememberImeState
+import com.syntaxticsugr.callerid.enums.ImeState
+import com.syntaxticsugr.callerid.utils.ImeStateListener
 import com.syntaxticsugr.callerid.viewmodel.SearchBarViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -41,12 +42,14 @@ fun SearchBar(
     searchBarViewModel: SearchBarViewModel = koinViewModel()
 ) {
     val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
-    val imeState = rememberImeState()
 
-    if (!imeState.value) {
-        focusManager.clearFocus()
+    val focusManager = LocalFocusManager.current
+    ImeStateListener { state ->
+        when (state) {
+            ImeState.HIDDEN -> focusManager.clearFocus()
+            else -> {}
+        }
     }
 
     if (searchBarViewModel.showPhoneNumberInfoDialog) {
